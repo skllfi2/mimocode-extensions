@@ -129,7 +129,7 @@ bash setup.sh status
 | `full-audit` | Comprehensive audit |
 | `quick-refactor` | Quick refactoring |
 
-### TUI Plugins (6)
+### TUI Plugins (10)
 | Plugin | Description |
 |--------|-------------|
 | `plugin.ts` | Main plugin entry |
@@ -139,6 +139,10 @@ bash setup.sh status
 | `session-dashboard` | Session info |
 | `status-bar` | Live status |
 | `status-panel` | Status details |
+| `sidebar-enhanced` | Enhanced sidebar with project/model/MCP info |
+| `sidebar-menu` | Quick actions menu in sidebar |
+| `token-stats` | Token usage statistics |
+| `mcp-panel` | MCP server management panel |
 
 ### MCP Servers (6)
 | Server | Description | Status |
