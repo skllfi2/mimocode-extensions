@@ -10,19 +10,41 @@ A curated collection of hooks, tools, skills, workflows, rules, and TUI plugins 
 - ✅ **6 MCP Servers** — filesystem, memory, github, sequential-thinking, postgres, puppeteer
 - ✅ **Fixed npm Issues** — no more "allow-scripts" warnings
 
-## Quick Install
+## Quick Install (One Command)
 
+### Linux/macOS
 ```bash
-# One-line install (Linux/macOS)
-curl -fsSL https://raw.githubusercontent.com/skllfi2/mimocode-extensions/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/skllfi2/mimocode-extensions/main/setup.sh | bash
+```
 
-# Or clone and install
-git clone https://github.com/skllfi2/mimocode-extensions.git
-cd mimocode-extensions
-bash install.sh
+### Windows (PowerShell)
+```powershell
+irm https://raw.githubusercontent.com/skllfi2/mimocode-extensions/main/setup.ps1 | iex
+```
 
-# Install MCP servers
-bash ~/.config/mimocode/.mimocode/mcp/install-mcp.sh
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `install` | Fresh install (default) |
+| `update` | Update from GitHub |
+| `update:mcp` | Update MCP servers only |
+| `status` | Show installed components |
+| `uninstall` | Remove all extensions |
+
+### Examples
+```bash
+# Install
+bash setup.sh install
+
+# Update from GitHub
+bash setup.sh update
+
+# Update only MCP servers
+bash setup.sh update:mcp
+
+# Check status
+bash setup.sh status
 ```
 
 ## What's Inside
