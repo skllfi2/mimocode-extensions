@@ -1,0 +1,143 @@
+{
+  "$schema": "https://mimo.xiaomi.com/mimocode/config.json",
+  
+  // ============================================
+  // MODEL & PROVIDER
+  // ============================================
+  
+  "model": "opencode-go/mimo-v2.5",
+  
+  "provider": {
+    "opencode-go": {
+      "baseURL": "https://opencode.ai/zen/go/v1",
+      "apiKey": "sk-go-your-api-key-here"
+    }
+  },
+  
+  "model_groups": {
+    "lite": "opencode-go/deepseek-v4-flash",
+    "standard": "opencode-go/mimo-v2.5",
+    "ultra": "opencode-go/glm-5.2"
+  },
+  
+  // ============================================
+  // MCP SERVERS
+  // ============================================
+  
+  "mcp": {
+    "filesystem": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem"]
+    },
+    "memory": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-memory"]
+    },
+    "github": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "your-token-here"
+      }
+    }
+  },
+  
+  // ============================================
+  // EXTENSIONS
+  // ============================================
+  
+  "skills": {
+    "paths": [
+      "~/.config/mimocode/.mimocode/skills"
+    ]
+  },
+  
+  // ============================================
+  // MEMORY
+  // ============================================
+  
+  "dream": {
+    "auto": true,
+    "interval_days": 3
+  },
+  
+  "distill": {
+    "auto": true,
+    "interval_days": 7
+  },
+  
+  // ============================================
+  // TASKS
+  // ============================================
+  
+  "checkpoint": {
+    "thresholds": ["40%", "60%", "80%"],
+    "task_archive_days": 14,
+    "memory_search_score_floor": 0.15
+  },
+  
+  // ============================================
+  // CONTEXT OPTIMIZATION
+  // ============================================
+  
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "tail_turns": 3,
+    "preserve_recent_tokens": 8000,
+    "reserved": 2000
+  },
+  
+  // ============================================
+  // EXPERIMENTAL
+  // ============================================
+  
+  "experimental": {
+    "maxMode": { "candidates": 3 },
+    "predict_next_prompt": true,
+    "continue_loop_on_deny": true,
+    "token_efficiency_heuristic": true
+  },
+  
+  // ============================================
+  // CUSTOM AGENTS
+  // ============================================
+  
+  "agent": {
+    "code-reviewer": {
+      "model": "opencode-go/deepseek-v4-flash",
+      "instructions": "Ты ревьюер кода. Проверяй на ошибки, улучшай качество. Пиши кратко."
+    },
+    "test-writer": {
+      "model": "opencode-go/deepseek-v4-flash",
+      "instructions": "Ты пишешь тесты. Создавай unit-тесты для всего кода."
+    },
+    "doc-writer": {
+      "model": "opencode-go/deepseek-v4-flash",
+      "instructions": "Ты пишешь документацию. Создавай README, комментарии, доку."
+    },
+    "architect": {
+      "model": "opencode-go/glm-5.2",
+      "instructions": "Ты архитектор. Проектируй систему, анализируй зависимости."
+    }
+  },
+  
+  // ============================================
+  // PERMISSIONS
+  // ============================================
+  
+  "permission": {
+    "external_directory": {
+      "/tmp/**": "allow",
+      "~/projects/**": "allow"
+    }
+  },
+  
+  // ============================================
+  // MISC
+  // ============================================
+  
+  "autoupdate": "notify",
+  "logLevel": "warn",
+  "instructions": "Всегда отвечай на русском языке. Пиши комментарии к коду на русском. Будь краток."
+}
