@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="AppTitle" xml:space="preserve">
+    <value>MiMoCode Launcher</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Search projects...</value>
+  </data>
+  <data name="AddProject" xml:space="preserve">
+    <value>Add Project</value>
+  </data>
+  <data name="LaunchMiMoCode" xml:space="preserve">
+    <value>Launch MiMoCode</value>
+  </data>
+  <data name="OpenFolder" xml:space="preserve">
+    <value>Open Folder</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="StatusReady" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="StatusSelected" xml:space="preserve">
+    <value>Selected: {0}</value>
+  </data>
+  <data name="StatusLaunching" xml:space="preserve">
+    <value>Launching MiMoCode in {0}...</value>
+  </data>
+  <data name="StatusLaunched" xml:space="preserve">
+    <value>MiMoCode launched in {0}</value>
+  </data>
+  <data name="StatusDeleted" xml:space="preserve">
+    <value>Deleted: {0}</value>
+  </data>
+  <data name="StatusAdded" xml:space="preserve">
+    <value>Added: {0}</value>
+  </data>
+  <data name="ColumnName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ColumnDescription" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="ColumnCategory" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="ColumnLastUsed" xml:space="preserve">
+    <value>Last Used</value>
+  </data>
+  <data name="ColumnPath" xml:space="preserve">
+    <value>Path</value>
+  </data>
+  <data name="AddProjectTitle" xml:space="preserve">
+    <value>Add Project</value>
+  </data>
+  <data name="ProjectName" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="ProjectPath" xml:space="preserve">
+    <value>Path:</value>
+  </data>
+  <data name="ProjectDescription" xml:space="preserve">
+    <value>Description:</value>
+  </data>
+  <data name="ProjectCategory" xml:space="preserve">
+    <value>Category:</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Delete project "{0}" from list?</value>
+  </data>
+  <data name="CategoryDesktop" xml:space="preserve">
+    <value>Desktop</value>
+  </data>
+  <data name="CategoryWeb" xml:space="preserve">
+    <value>Web</value>
+  </data>
+  <data name="CategoryMobile" xml:space="preserve">
+    <value>Mobile</value>
+  </data>
+  <data name="CategoryGaming" xml:space="preserve">
+    <value>Gaming</value>
+  </data>
+  <data name="CategoryDevelopment" xml:space="preserve">
+    <value>Development</value>
+  </data>
+  <data name="CategoryOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+</root>

@@ -17,16 +17,16 @@ public partial class MainViewModel : ObservableObject
     private List<Project> _allProjects = [];
 
     [ObservableProperty]
-    private ObservableCollection<Project> _projects = [];
+    private ObservableCollection<Project> projects = [];
 
     [ObservableProperty]
-    private Project? _selectedProject;
+    private Project? selectedProject;
 
     [ObservableProperty]
-    private string _searchText = string.Empty;
+    private string searchText = string.Empty;
 
     [ObservableProperty]
-    private string _statusText = "Ready";
+    private string statusText = "Ready";
 
     public MainViewModel(ProjectService projectService)
     {

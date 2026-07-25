@@ -16,6 +16,8 @@
     <Nullable>enable</Nullable>
     <WindowsAppSdkAutoInitialize>true</WindowsAppSdkAutoInitialize>
     <WindowsAppSdkBootstrapInitialize>true</WindowsAppSdkBootstrapInitialize>
+    <!-- Suppress MVVMTK0045 warning for WinUI 3 AOT compatibility -->
+    <NoWarn>$(NoWarn);MVVMTK0045</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
