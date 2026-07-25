@@ -34,7 +34,7 @@
 
             <!-- Search Box -->
             <AutoSuggestBox x:Name="SearchBox"
-                           PlaceholderText="Поиск проектов..."
+                           x:Uid="SearchBox"
                            QueryIcon="Find"
                            Width="400"
                            HorizontalAlignment="Left"
@@ -90,23 +90,23 @@
 
         <!-- ═══ Footer Buttons ═══ -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" Margin="0,24,0,0">
-            <Button Content="Добавить проект"
+            <Button x:Uid="AddProjectButton"
                     Style="{StaticResource AccentButtonStyle}"
                     Click="AddProject_Click"
                     Padding="16,8"/>
 
-            <Button Content="Запустить MiMoCode"
+            <Button x:Uid="LaunchButton"
                     Style="{StaticResource AccentButtonStyle}"
                     Click="LaunchMiMoCode_Click"
                     IsEnabled="{x:Bind ViewModel.SelectedProject, Converter={StaticResource NullToFalseConverter}}"
                     Padding="16,8"/>
 
-            <Button Content="Открыть папку"
+            <Button x:Uid="OpenFolderButton"
                     Click="OpenFolder_Click"
                     IsEnabled="{x:Bind ViewModel.SelectedProject, Converter={StaticResource NullToFalseConverter}}"
                     Padding="16,8"/>
 
-            <Button Content="Удалить"
+            <Button x:Uid="DeleteButton"
                     Click="DeleteProject_Click"
                     IsEnabled="{x:Bind ViewModel.SelectedProject, Converter={StaticResource NullToFalseConverter}}"
                     Padding="16,8"

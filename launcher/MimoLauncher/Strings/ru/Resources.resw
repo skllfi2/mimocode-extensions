@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="AppTitle" xml:space="preserve">
+    <value>MiMoCode Launcher</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Поиск проектов...</value>
+  </data>
+  <data name="AddProject" xml:space="preserve">
+    <value>Добавить проект</value>
+  </data>
+  <data name="LaunchMiMoCode" xml:space="preserve">
+    <value>Запустить MiMoCode</value>
+  </data>
+  <data name="OpenFolder" xml:space="preserve">
+    <value>Открыть папку</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="StatusReady" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="StatusSelected" xml:space="preserve">
+    <value>Выбрано: {0}</value>
+  </data>
+  <data name="StatusLaunching" xml:space="preserve">
+    <value>Запуск MiMoCode в {0}...</value>
+  </data>
+  <data name="StatusLaunched" xml:space="preserve">
+    <value>MiMoCode запущен в {0}</value>
+  </data>
+  <data name="StatusDeleted" xml:space="preserve">
+    <value>Удалено: {0}</value>
+  </data>
+  <data name="StatusAdded" xml:space="preserve">
+    <value>Добавлено: {0}</value>
+  </data>
+  <data name="ColumnName" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="ColumnDescription" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="ColumnCategory" xml:space="preserve">
+    <value>Категория</value>
+  </data>
+  <data name="ColumnLastUsed" xml:space="preserve">
+    <value>Последнее использование</value>
+  </data>
+  <data name="ColumnPath" xml:space="preserve">
+    <value>Путь</value>
+  </data>
+  <data name="AddProjectTitle" xml:space="preserve">
+    <value>Добавить проект</value>
+  </data>
+  <data name="ProjectName" xml:space="preserve">
+    <value>Название:</value>
+  </data>
+  <data name="ProjectPath" xml:space="preserve">
+    <value>Путь:</value>
+  </data>
+  <data name="ProjectDescription" xml:space="preserve">
+    <value>Описание:</value>
+  </data>
+  <data name="ProjectCategory" xml:space="preserve">
+    <value>Категория:</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Обзор...</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Удалить проект "{0}" из списка?</value>
+  </data>
+  <data name="CategoryDesktop" xml:space="preserve">
+    <value>Десктоп</value>
+  </data>
+  <data name="CategoryWeb" xml:space="preserve">
+    <value>Веб</value>
+  </data>
+  <data name="CategoryMobile" xml:space="preserve">
+    <value>Мобильное</value>
+  </data>
+  <data name="CategoryGaming" xml:space="preserve">
+    <value>Игры</value>
+  </data>
+  <data name="CategoryDevelopment" xml:space="preserve">
+    <value>Разработка</value>
+  </data>
+  <data name="CategoryOther" xml:space="preserve">
+    <value>Другое</value>
+  </data>
+</root>
