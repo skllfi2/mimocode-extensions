@@ -32,7 +32,8 @@ public sealed partial class TerminalPage : Page
         DispatcherQueue.TryEnqueue(() =>
         {
             OutputText.Text += output;
-            OutputScrollViewer.ScrollToEnd();
+            // Scroll to bottom
+            OutputScrollViewer.ChangeView(0, OutputScrollViewer.ExtentHeight, 0);
         });
     }
     
@@ -104,6 +105,6 @@ public sealed partial class TerminalPage : Page
     
     public void SetWorkingDirectory(string path)
     {
-        _terminal.CurrentDirectory = path;
+        _terminal.SetWorkingDirectory(path);
     }
 }

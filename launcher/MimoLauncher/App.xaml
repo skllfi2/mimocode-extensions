@@ -7,8 +7,16 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls"/>
-                <ResourceDictionary Source="Styles/DesignSystem.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Mica: transparent backgrounds -->
+            <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
+            <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="Transparent"/>
+            <SolidColorBrush x:Key="NavigationViewEnabledBackground" Color="Transparent"/>
+            <SolidColorBrush x:Key="LayerFillColorDefaultBrush" Color="Transparent"/>
+            <SolidColorBrush x:Key="LayerFillColorSecondaryBrush" Color="Transparent"/>
+            <SolidColorBrush x:Key="LayerFillColorTertiaryBrush" Color="Transparent"/>
+            <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

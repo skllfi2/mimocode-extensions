@@ -8,20 +8,14 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-
-        // Set window title
         Title = "MiMoCode Launcher";
-    }
-    
-    public void NavigateToTerminal(string? workingDirectory = null)
-    {
-        // Switch to terminal tab
-        MainTabView.SelectedIndex = 1;
         
-        // Set working directory if provided
-        if (TerminalPage != null && !string.IsNullOrEmpty(workingDirectory))
-        {
-            TerminalPage.SetWorkingDirectory(workingDirectory);
-        }
+        // Navigate to main page
+        ContentFrame.Navigate(typeof(MainPage));
+    }
+
+    public void NavigateToPage(System.Type pageType)
+    {
+        ContentFrame.Navigate(pageType);
     }
 }

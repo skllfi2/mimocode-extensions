@@ -16,7 +16,15 @@ public class TerminalService : IDisposable
     public event EventHandler? ProcessExited;
     public bool IsRunning => _process != null && !_process.HasExited;
     
-    public string CurrentDirectory { get; private set; } = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+    public string CurrentDirectory { get; set; } = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+    
+    public void SetWorkingDirectory(string path)
+    {
+        if (Directory.Exists(path))
+        {
+            CurrentDirectory = path;
+        }
+    }
     
     public async Task StartAsync(string? workingDirectory = null)
     {

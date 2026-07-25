@@ -11,7 +11,7 @@ public class ExtensionsService
     private readonly string _mimoHome;
     private readonly string _mimoTarget;
     private readonly string _backupDir;
-    private readonly string _setupScriptPath;
+    private string _setupScriptPath;
     
     public ExtensionsService()
     {

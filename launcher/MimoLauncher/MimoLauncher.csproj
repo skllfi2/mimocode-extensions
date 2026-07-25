@@ -14,8 +14,13 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
     <WindowsAppSdkAutoInitialize>true</WindowsAppSdkAutoInitialize>
     <WindowsAppSdkBootstrapInitialize>true</WindowsAppSdkBootstrapInitialize>
+    <WindowsAppSdkBootstrapAutoInitializeOptions_OnPackageIdentity_NoOp>true</WindowsAppSdkBootstrapAutoInitializeOptions_OnPackageIdentity_NoOp>
+    <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
+    <WindowsAppSdkUndockedRegFreeWinRTInitialize>false</WindowsAppSdkUndockedRegFreeWinRTInitialize>
+    <WindowsAppSdkCompatibilityInitialize>false</WindowsAppSdkCompatibilityInitialize>
     <!-- Suppress MVVMTK0045 warning for WinUI 3 AOT compatibility -->
     <NoWarn>$(NoWarn);MVVMTK0045</NoWarn>
   </PropertyGroup>
