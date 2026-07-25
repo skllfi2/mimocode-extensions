@@ -16,64 +16,20 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Spacing="16" Margin="0,0,0,24">
-            <StackPanel Orientation="Horizontal" Spacing="12">
-                <TextBlock Text="📦 MiMoCode Extensions" 
-                           FontSize="28" FontWeight="SemiBold"
-                           Foreground="{ThemeResource TextFillColorPrimaryBrush}"
-                           VerticalAlignment="Center"/>
-            </StackPanel>
-        </StackPanel>
+        <TextBlock Grid.Row="0" 
+                   Text="MiMoCode Extensions"
+                   FontSize="24" FontWeight="SemiBold"
+                   Margin="0,0,0,16"/>
 
         <!-- Status Panel -->
-        <Border Style="{StaticResource CardBorder}" Grid.Row="1" Margin="0,0,0,16">
+        <Border Grid.Row="1" 
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                CornerRadius="8" Padding="16" Margin="0,0,0,16">
             <StackPanel Spacing="12">
                 <TextBlock Text="Status" FontSize="16" FontWeight="SemiBold"/>
-                
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <StackPanel Grid.Column="0" Spacing="4">
-                        <TextBlock Text="Hooks" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                        <TextBlock x:Name="HooksCount" Text="0" FontSize="20" FontWeight="SemiBold"/>
-                    </StackPanel>
-                    
-                    <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="Tools" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                        <TextBlock x:Name="ToolsCount" Text="0" FontSize="20" FontWeight="SemiBold"/>
-                    </StackPanel>
-                    
-                    <StackPanel Grid.Column="2" Spacing="4">
-                        <TextBlock Text="Skills" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                        <TextBlock x:Name="SkillsCount" Text="0" FontSize="20" FontWeight="SemiBold"/>
-                    </StackPanel>
-                    
-                    <StackPanel Grid.Column="3" Spacing="4">
-                        <TextBlock Text="Rules" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                        <TextBlock x:Name="RulesCount" Text="0" FontSize="20" FontWeight="SemiBold"/>
-                    </StackPanel>
-                    
-                    <StackPanel Grid.Column="4" Spacing="4">
-                        <TextBlock Text="Workflows" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                        <TextBlock x:Name="WorkflowsCount" Text="0" FontSize="20" FontWeight="SemiBold"/>
-                    </StackPanel>
-                    
-                    <StackPanel Grid.Column="5" Spacing="4">
-                        <TextBlock Text="TUI" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                        <TextBlock x:Name="TuiCount" Text="0" FontSize="20" FontWeight="SemiBold"/>
-                    </StackPanel>
-                </Grid>
-                
-                <TextBlock x:Name="TotalText" 
-                           FontSize="14" 
-                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                <TextBlock x:Name="StatusText" 
+                           Text="Loading..."
+                           FontSize="14"/>
             </StackPanel>
         </Border>
 
@@ -84,23 +40,13 @@
                       HorizontalAlignment="Center"
                       Margin="0,0,0,16"/>
 
-        <!-- Status Message -->
-        <TextBlock x:Name="StatusMessage" 
-                   Text="Ready"
-                   FontSize="14"
-                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                   HorizontalAlignment="Center"
-                   Margin="0,0,0,16"/>
-
         <!-- Action Buttons -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
             <Button Content="Install"
-                    Style="{StaticResource AccentButtonStyle}"
                     Click="Install_Click"
                     Padding="16,8"/>
             
             <Button Content="Update"
-                    Style="{StaticResource AccentButtonStyle}"
                     Click="Update_Click"
                     Padding="16,8"/>
             
@@ -110,8 +56,7 @@
             
             <Button Content="Uninstall"
                     Click="Uninstall_Click"
-                    Padding="16,8"
-                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
+                    Padding="16,8"/>
         </StackPanel>
     </Grid>
 </Page>

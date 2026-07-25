@@ -17,9 +17,10 @@ public sealed partial class TerminalPage : Page
         _terminal.ProcessExited += OnProcessExited;
     }
     
-    private void OnLoaded(object sender, RoutedEventArgs e)
+    private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        // Page loaded
+        // Auto-start terminal and launch MiMoCode
+        await StartTerminalAndLaunchMimo();
     }
     
     private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -27,12 +28,36 @@ public sealed partial class TerminalPage : Page
         _terminal.Stop();
     }
     
+    private async Task StartTerminalAndLaunchMimo()
+    {
+        try
+        {
+            StatusText.Text = "Starting PowerShell...";
+            StartButton.IsEnabled = false;
+            
+            await _terminal.StartAsync();
+            
+            StatusText.Text = "Launching MiMoCode...";
+            
+            // Send mimo command
+            await _terminal.SendCommandAsync("mimo");
+            
+            StatusText.Text = "MiMoCode running";
+            StopButton.IsEnabled = true;
+            InputBox.Focus(FocusState.Programmatic);
+        }
+        catch (Exception ex)
+        {
+            StatusText.Text = $"Error: {ex.Message}";
+            StartButton.IsEnabled = true;
+        }
+    }
+    
     private void OnOutputReceived(object? sender, string output)
     {
         DispatcherQueue.TryEnqueue(() =>
         {
             OutputText.Text += output;
-            // Scroll to bottom
             OutputScrollViewer.ChangeView(0, OutputScrollViewer.ExtentHeight, 0);
         });
     }
@@ -49,22 +74,7 @@ public sealed partial class TerminalPage : Page
     
     private async void StartButton_Click(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            StatusText.Text = "Starting...";
-            StartButton.IsEnabled = false;
-            
-            await _terminal.StartAsync();
-            
-            StatusText.Text = "Running";
-            StopButton.IsEnabled = true;
-            InputBox.Focus(FocusState.Programmatic);
-        }
-        catch (Exception ex)
-        {
-            StatusText.Text = $"Error: {ex.Message}";
-            StartButton.IsEnabled = true;
-        }
+        await StartTerminalAndLaunchMimo();
     }
     
     private void StopButton_Click(object sender, RoutedEventArgs e)

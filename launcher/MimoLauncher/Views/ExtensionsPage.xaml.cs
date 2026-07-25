@@ -22,40 +22,48 @@ public sealed partial class ExtensionsPage : Page
     private async Task RefreshStatus()
     {
         var status = await _extensionsService.GetStatusAsync();
-        
-        HooksCount.Text = status.HooksCount.ToString();
-        ToolsCount.Text = status.ToolsCount.ToString();
-        SkillsCount.Text = status.SkillsCount.ToString();
-        RulesCount.Text = status.RulesCount.ToString();
-        WorkflowsCount.Text = status.WorkflowsCount.ToString();
-        TuiCount.Text = status.TuiCount.ToString();
-        TotalText.Text = $"Total: {status.TotalCount} components";
-        
-        StatusMessage.Text = status.IsInstalled ? "Extensions installed" : "Extensions not installed";
+        StatusText.Text = status.IsInstalled 
+            ? $"Installed: {status.TotalCount} components" 
+            : "Not installed";
     }
     
     private async void Install_Click(object sender, RoutedEventArgs e)
     {
-        await RunOperationAsync("Installing...", async (progress) =>
-        {
-            return await _extensionsService.InstallAsync(progress);
-        });
+        ProgressRing.IsActive = true;
+        StatusText.Text = "Installing...";
+        
+        var progress = new Progress<string>(msg => StatusText.Text = msg);
+        var success = await _extensionsService.InstallAsync(progress);
+        
+        ProgressRing.IsActive = false;
+        StatusText.Text = success ? "Installation complete" : "Installation failed";
+        await RefreshStatus();
     }
     
     private async void Update_Click(object sender, RoutedEventArgs e)
     {
-        await RunOperationAsync("Updating...", async (progress) =>
-        {
-            return await _extensionsService.UpdateAsync(progress);
-        });
+        ProgressRing.IsActive = true;
+        StatusText.Text = "Updating...";
+        
+        var progress = new Progress<string>(msg => StatusText.Text = msg);
+        var success = await _extensionsService.UpdateAsync(progress);
+        
+        ProgressRing.IsActive = false;
+        StatusText.Text = success ? "Update complete" : "Update failed";
+        await RefreshStatus();
     }
     
     private async void UpdateMcp_Click(object sender, RoutedEventArgs e)
     {
-        await RunOperationAsync("Updating MCP servers...", async (progress) =>
-        {
-            return await _extensionsService.UpdateMcpAsync(progress);
-        });
+        ProgressRing.IsActive = true;
+        StatusText.Text = "Updating MCP servers...";
+        
+        var progress = new Progress<string>(msg => StatusText.Text = msg);
+        var success = await _extensionsService.UpdateMcpAsync(progress);
+        
+        ProgressRing.IsActive = false;
+        StatusText.Text = success ? "MCP update complete" : "MCP update failed";
+        await RefreshStatus();
     }
     
     private async void Uninstall_Click(object sender, RoutedEventArgs e)
@@ -72,28 +80,15 @@ public sealed partial class ExtensionsPage : Page
         var result = await dialog.ShowAsync();
         if (result == ContentDialogResult.Primary)
         {
-            await RunOperationAsync("Uninstalling...", async (progress) =>
-            {
-                return await _extensionsService.UninstallAsync(progress);
-            });
+            ProgressRing.IsActive = true;
+            StatusText.Text = "Uninstalling...";
+            
+            var progress = new Progress<string>(msg => StatusText.Text = msg);
+            var success = await _extensionsService.UninstallAsync(progress);
+            
+            ProgressRing.IsActive = false;
+            StatusText.Text = success ? "Uninstall complete" : "Uninstall failed";
+            await RefreshStatus();
         }
-    }
-    
-    private async Task RunOperationAsync(string message, Func<IProgress<string>, Task<bool>> operation)
-    {
-        StatusMessage.Text = message;
-        ProgressRing.IsActive = true;
-        
-        var progress = new Progress<string>(msg =>
-        {
-            StatusMessage.Text = msg;
-        });
-        
-        var success = await operation(progress);
-        
-        ProgressRing.IsActive = false;
-        StatusMessage.Text = success ? "Operation complete" : "Operation failed";
-        
-        await RefreshStatus();
     }
 }

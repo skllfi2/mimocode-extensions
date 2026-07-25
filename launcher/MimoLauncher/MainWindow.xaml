@@ -16,14 +16,24 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Padding="16,8">
             <TextBlock Text="MiMoCode Launcher" 
                        FontSize="20" FontWeight="SemiBold"
                        VerticalAlignment="Center"/>
         </StackPanel>
 
-        <!-- Content Area -->
-        <Frame x:Name="ContentFrame" Grid.Row="1"/>
+        <TabView x:Name="MainTabView" Grid.Row="1" IsAddTabButtonVisible="False">
+            <TabView.TabItems>
+                <TabViewItem Header="Projects">
+                    <views:MainPage/>
+                </TabViewItem>
+                <TabViewItem Header="Terminal">
+                    <views:TerminalPage/>
+                </TabViewItem>
+                <TabViewItem Header="Extensions">
+                    <views:ExtensionsPage/>
+                </TabViewItem>
+            </TabView.TabItems>
+        </TabView>
     </Grid>
 </Window>
