@@ -1,3 +1,4 @@
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MimoLauncher.ViewModels;
 
@@ -12,6 +13,11 @@ public sealed partial class MainPage : Page
         InitializeComponent();
         ViewModel = App.GetService<MainViewModel>();
         DataContext = ViewModel;
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // Page loaded
     }
 
     private void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
@@ -35,22 +41,22 @@ public sealed partial class MainPage : Page
         }
     }
 
-    private void AddProject_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void AddProject_Click(object sender, RoutedEventArgs e)
     {
         ViewModel.AddProjectCommand.Execute(null);
     }
 
-    private void LaunchMiMoCode_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void LaunchMiMoCode_Click(object sender, RoutedEventArgs e)
     {
         ViewModel.LaunchMiMoCodeCommand.Execute(null);
     }
 
-    private void OpenFolder_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void OpenFolder_Click(object sender, RoutedEventArgs e)
     {
         ViewModel.OpenFolderCommand.Execute(null);
     }
 
-    private void DeleteProject_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void DeleteProject_Click(object sender, RoutedEventArgs e)
     {
         ViewModel.DeleteProjectCommand.Execute(null);
     }
