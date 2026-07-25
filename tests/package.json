@@ -1,0 +1,17 @@
+{
+  "name": "mimocode-extensions-tests",
+  "version": "1.0.0",
+  "description": "Tests for MiMoCode Extensions",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js",
+    "test:hooks": "node test-hooks.js",
+    "test:install": "node test-install.js"
+  },
+  "keywords": ["mimocode", "tests"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
