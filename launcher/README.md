@@ -1,38 +1,85 @@
-# MiMoCode Project Launcher
+# MiMoCode Launcher
 
-A PowerShell GUI launcher for managing and launching MiMoCode projects.
+Unified control center for MiMoCode projects and extensions.
 
 ## Features
 
-- **Project List**: View all projects with name, description, category, and last used date
-- **Search**: Filter projects by name, description, or category
-- **Add Project**: Add new projects to the list
-- **Launch MiMoCode**: Open MiMoCode in the selected project directory
-- **Open Folder**: Open project folder in Explorer
-- **Edit/Delete**: Manage project entries
-- **Recent Tracking**: Automatically tracks last used date
+### Projects Tab
+- **Project List**: View all projects with name, description, category
+- **Search**: Filter projects by name, description, category
+- **Launch MiMoCode**: Open MiMoCode in selected project directory
+- **Open in Terminal**: Open integrated terminal in project directory
+- **Add/Delete Projects**: Manage project list
+
+### Terminal Tab
+- **Integrated PowerShell**: Native terminal experience
+- **Command Execution**: Run commands directly in the launcher
+- **Project Context**: Terminal opens in selected project directory
+
+### Extensions Tab
+- **Install**: Install MiMoCode extensions from GitHub
+- **Update**: Update extensions to latest version
+- **Update MCP**: Update MCP servers only
+- **Uninstall**: Remove all extensions
+- **Status**: View installed component counts
 
 ## Installation
 
-No installation required. Just run the PowerShell script:
+### Prerequisites
+- Windows 10/11
+- .NET 10 SDK
+- Windows App SDK Runtime
+
+### Build and Run
 
 ```powershell
-.\mimo-launcher.ps1
+cd F:\Development\mimocode-extensions-update\launcher\MimoLauncher
+dotnet run
 ```
 
-## Usage
+### Install Windows App SDK Runtime
 
-1. **Launch the launcher**:
-   ```powershell
-   cd F:\Development\mimocode-extensions\launcher
-   .\mimo-launcher.ps1
-   ```
+Download and install from:
+```
+https://aka.ms/windowsappsdk/1.8/1.8.260709004/windowsappruntimeinstaller-x64.exe
+```
 
-2. **Select a project** from the list
+## Project Structure
 
-3. **Click "Launch MiMoCode"** to open MiMoCode in that directory
-
-4. **Add new projects** using the "+ Add Project" button
+```
+launcher/
+├── MimoLauncher.slnx           # Solution file
+├── MimoLauncher/               # WinUI 3 application
+│   ├── App.xaml(.cs)           # Application entry
+│   ├── MainWindow.xaml(.cs)    # Main window with TabView
+│   ├── Views/
+│   │   ├── MainPage.xaml(.cs)  # Projects tab
+│   │   ├── TerminalPage.xaml(.cs) # Terminal tab
+│   │   └── ExtensionsPage.xaml(.cs) # Extensions tab
+│   ├── ViewModels/
+│   │   └── MainViewModel.cs    # Main ViewModel
+│   ├── Models/
+│   │   ├── Project.cs          # Project model
+│   │   ├── AppSettings.cs      # Settings model
+│   │   └── LauncherConfig.cs   # Configuration model
+│   ├── Services/
+│   │   ├── ProjectService.cs   # Project management
+│   │   ├── TerminalService.cs  # PowerShell terminal
+│   │   ├── ExtensionsService.cs # Extension management
+│   │   └── LocalizationService.cs # Localization
+│   ├── Styles/
+│   │   └── DesignSystem.xaml   # Fluent Design styles
+│   ├── Themes/
+│   │   ├── Dark.xaml           # Dark theme
+│   │   └── Light.xaml         # Light theme
+│   └── Strings/
+│       ├── ru/Resources.resw   # Russian localization
+│       ├── en/Resources.resw   # English localization
+│       └── en-US/Resources.resw # Default language
+├── setup.ps1                   # PowerShell installer
+├── setup.sh                    # Bash installer
+└── projects.json               # Project database
+```
 
 ## Configuration
 
@@ -51,56 +98,41 @@ Projects are stored in `projects.json`:
     }
   ],
   "settings": {
-    "theme": "dark",
-    "showRecent": true,
-    "recentCount": 5
+    "theme": "system",
+    "language": "system"
   }
 }
 ```
 
-## Adding Projects
+## Localization
 
-### Via GUI
-1. Click "+ Add Project"
-2. Enter project name and path
-3. Click "Add"
+The launcher supports Russian and English. Language is detected from system settings.
 
-### Via JSON
-Edit `projects.json` directly:
+To add new languages:
+1. Create `Strings/<language>/Resources.resw`
+2. Add translations
+3. Update `LocalizationService.cs`
 
-```json
-{
-  "name": "NewProject",
-  "path": "F:\\Development\\NewProject",
-  "description": "My new project",
-  "category": "Desktop",
-  "favorite": false,
-  "lastUsed": ""
-}
+## Development
+
+### Build
+
+```powershell
+dotnet build
 ```
 
-## Categories
+### Run
 
-- **Desktop**: WinUI 3, WPF, WinForms applications
-- **Web**: Web applications and sites
-- **Mobile**: Mobile applications
-- **Gaming**: Game-related projects
-- **Development**: Development tools and libraries
-- **Other**: Uncategorized projects
+```powershell
+dotnet run
+```
 
-## Keyboard Shortcuts
+### Publish
 
-- **Enter**: Launch MiMoCode for selected project
-- **Delete**: Delete selected project
-- **Ctrl+F**: Focus search box
-- **Ctrl+N**: Add new project
+```powershell
+dotnet publish -c Release
+```
 
-## Future Enhancements
+## License
 
-- [ ] Edit project details dialog
-- [ ] Drag and drop project folders
-- [ ] Import/export project lists
-- [ ] Git integration (status, commit)
-- [ ] Token usage statistics
-- [ ] Project templates
-- [ ] Auto-discover projects in directories
+MIT

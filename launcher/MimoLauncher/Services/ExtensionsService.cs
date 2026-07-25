@@ -11,6 +11,7 @@ public class ExtensionsService
     private readonly string _mimoHome;
     private readonly string _mimoTarget;
     private readonly string _backupDir;
+    private readonly string _setupScriptPath;
     
     public ExtensionsService()
     {
@@ -18,6 +19,7 @@ public class ExtensionsService
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config", "mimocode");
         _mimoTarget = Path.Combine(_mimoHome, ".mimocode");
         _backupDir = Path.Combine(_mimoHome, $".backup-{DateTime.Now:yyyyMMdd-HHmmss}");
+        _setupScriptPath = Path.Combine(AppContext.BaseDirectory, "setup.ps1");
     }
     
     public bool IsInstalled => Directory.Exists(_mimoTarget);
@@ -47,27 +49,10 @@ public class ExtensionsService
     {
         try
         {
-            progress?.Report("Checking dependencies...");
-            if (!CheckDependencies())
-                return false;
-            
-            progress?.Report("Fixing npm configuration...");
-            FixNpmConfig();
-            
-            progress?.Report("Backing up existing installation...");
-            BackupExisting();
-            
-            progress?.Report("Cloning repository...");
-            var tempDir = await CloneRepoAsync();
-            
-            progress?.Report("Installing extensions...");
-            CopyExtensions(tempDir);
-            
-            progress?.Report("Cleaning up...");
-            Cleanup(tempDir);
-            
-            progress?.Report("Installation complete!");
-            return true;
+            progress?.Report("Installing extensions via setup.ps1...");
+            var result = await RunPowerShellScriptAsync("install");
+            progress?.Report(result ? "Installation complete!" : "Installation failed");
+            return result;
         }
         catch (Exception ex)
         {
@@ -78,31 +63,28 @@ public class ExtensionsService
     
     public async Task<bool> UpdateAsync(IProgress<string>? progress = null)
     {
-        return await InstallAsync(progress);
+        try
+        {
+            progress?.Report("Updating extensions via setup.ps1...");
+            var result = await RunPowerShellScriptAsync("update");
+            progress?.Report(result ? "Update complete!" : "Update failed");
+            return result;
+        }
+        catch (Exception ex)
+        {
+            progress?.Report($"Error: {ex.Message}");
+            return false;
+        }
     }
     
     public async Task<bool> UpdateMcpAsync(IProgress<string>? progress = null)
     {
         try
         {
-            progress?.Report("Updating MCP servers...");
-            
-            var mcpDir = Path.Combine(_mimoTarget, "mcp");
-            if (!Directory.Exists(mcpDir))
-            {
-                progress?.Report("MCP directory not found");
-                return false;
-            }
-            
-            var installScript = Path.Combine(mcpDir, "install-mcp.sh");
-            if (File.Exists(installScript))
-            {
-                progress?.Report("Running MCP installer...");
-                await RunCommandAsync("bash", installScript);
-            }
-            
-            progress?.Report("MCP update complete!");
-            return true;
+            progress?.Report("Updating MCP servers via setup.ps1...");
+            var result = await RunPowerShellScriptAsync("update:mcp");
+            progress?.Report(result ? "MCP update complete!" : "MCP update failed");
+            return result;
         }
         catch (Exception ex)
         {
@@ -115,20 +97,10 @@ public class ExtensionsService
     {
         try
         {
-            if (!IsInstalled)
-            {
-                progress?.Report("Extensions not installed");
-                return true;
-            }
-            
-            progress?.Report("Backing up before uninstall...");
-            BackupExisting();
-            
-            progress?.Report("Removing extensions...");
-            Directory.Delete(_mimoTarget, true);
-            
-            progress?.Report("Uninstall complete!");
-            return true;
+            progress?.Report("Uninstalling via setup.ps1...");
+            var result = await RunPowerShellScriptAsync("uninstall");
+            progress?.Report(result ? "Uninstall complete!" : "Uninstall failed");
+            return result;
         }
         catch (Exception ex)
         {
@@ -137,132 +109,69 @@ public class ExtensionsService
         }
     }
     
-    private bool CheckDependencies()
+    private async Task<bool> RunPowerShellScriptAsync(string command)
     {
-        return CommandExists("git") && CommandExists("npm") && CommandExists("node");
-    }
-    
-    private bool CommandExists(string command)
-    {
-        try
+        var scriptExists = File.Exists(_setupScriptPath);
+        
+        // If script doesn't exist in app directory, try to find it
+        if (!scriptExists)
         {
-            var process = Process.Start(new ProcessStartInfo
+            // Try common locations
+            var possiblePaths = new[]
             {
-                FileName = "where",
-                Arguments = command,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            });
-            process?.WaitForExit();
-            return process?.ExitCode == 0;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-    
-    private void FixNpmConfig()
-    {
-        try
-        {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "npm",
-                Arguments = "config set allow-scripts true",
-                UseShellExecute = false,
-                CreateNoWindow = true
-            })?.WaitForExit();
-        }
-        catch { }
-    }
-    
-    private void BackupExisting()
-    {
-        if (Directory.Exists(_mimoTarget))
-        {
-            Directory.CreateDirectory(_backupDir);
-            CopyDirectory(_mimoTarget, _backupDir);
-        }
-    }
-    
-    private async Task<string> CloneRepoAsync()
-    {
-        var tempDir = Path.Combine(Path.GetTempPath(), $"mimocode-extensions-{Guid.NewGuid():N}");
-        
-        await RunCommandAsync("git", $"clone --depth 1 {_repoUrl} {tempDir}");
-        
-        return tempDir;
-    }
-    
-    private void CopyExtensions(string sourceDir)
-    {
-        var targetDirs = new[] { "hooks", "tools", "skills", "rules", "workflows", "tui", "mcp" };
-        
-        foreach (var dir in targetDirs)
-        {
-            var sourcePath = Path.Combine(sourceDir, dir);
-            var targetPath = Path.Combine(_mimoTarget, dir);
+                Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "setup.ps1"),
+                Path.Combine(Environment.CurrentDirectory, "setup.ps1"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "setup.ps1")
+            };
             
-            if (Directory.Exists(sourcePath))
+            foreach (var path in possiblePaths)
             {
-                Directory.CreateDirectory(targetPath);
-                CopyDirectory(sourcePath, targetPath);
+                if (File.Exists(path))
+                {
+                    _setupScriptPath = path;
+                    scriptExists = true;
+                    break;
+                }
             }
         }
         
-        // Copy plugin.ts and package.json
-        var pluginFile = Path.Combine(sourceDir, "plugin.ts");
-        if (File.Exists(pluginFile))
-            File.Copy(pluginFile, Path.Combine(_mimoTarget, "plugin.ts"), true);
-        
-        var packageFile = Path.Combine(sourceDir, "package.json");
-        if (File.Exists(packageFile))
-            File.Copy(packageFile, Path.Combine(_mimoTarget, "package.json"), true);
-    }
-    
-    private void CopyDirectory(string source, string destination)
-    {
-        Directory.CreateDirectory(destination);
-        
-        foreach (var file in Directory.GetFiles(source))
+        if (!scriptExists)
         {
-            File.Copy(file, Path.Combine(destination, Path.GetFileName(file)), true);
+            // Download the script if not found
+            await DownloadSetupScriptAsync();
         }
         
-        foreach (var dir in Directory.GetDirectories(source))
+        var startInfo = new ProcessStartInfo
         {
-            CopyDirectory(dir, Path.Combine(destination, Path.GetFileName(dir)));
-        }
-    }
-    
-    private void Cleanup(string tempDir)
-    {
-        try
-        {
-            if (Directory.Exists(tempDir))
-                Directory.Delete(tempDir, true);
-        }
-        catch { }
-    }
-    
-    private async Task RunCommandAsync(string command, string arguments)
-    {
-        var process = Process.Start(new ProcessStartInfo
-        {
-            FileName = command,
-            Arguments = arguments,
+            FileName = "powershell.exe",
+            Arguments = $"-ExecutionPolicy Bypass -File \"{_setupScriptPath}\" {command}",
             UseShellExecute = false,
             CreateNoWindow = true,
             RedirectStandardOutput = true,
             RedirectStandardError = true
-        });
+        };
         
-        if (process != null)
-        {
-            await process.WaitForExitAsync();
-        }
+        var process = Process.Start(startInfo);
+        if (process == null) return false;
+        
+        var output = await process.StandardOutput.ReadToEndAsync();
+        var error = await process.StandardError.ReadToEndAsync();
+        
+        await process.WaitForExitAsync();
+        
+        return process.ExitCode == 0;
+    }
+    
+    private async Task DownloadSetupScriptAsync()
+    {
+        var url = "https://raw.githubusercontent.com/skllfi2/mimocode-extensions/main/setup.ps1";
+        
+        using var httpClient = new HttpClient();
+        var content = await httpClient.GetStringAsync(url);
+        
+        // Save to temp directory
+        _setupScriptPath = Path.Combine(Path.GetTempPath(), "mimocode-setup.ps1");
+        await File.WriteAllTextAsync(_setupScriptPath, content);
     }
     
     private int CountFiles(string directory, string pattern)
