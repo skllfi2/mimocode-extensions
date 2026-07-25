@@ -60,4 +60,13 @@ public sealed partial class MainPage : Page
     {
         ViewModel.DeleteProjectCommand.Execute(null);
     }
+
+    private void OpenInTerminal_Click(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedProject == null) return;
+
+        // Get the main window and navigate to terminal
+        var mainWindow = Window.Current as MainWindow;
+        mainWindow?.NavigateToTerminal(ViewModel.SelectedProject.Path);
+    }
 }

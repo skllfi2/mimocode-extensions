@@ -101,6 +101,11 @@
                     IsEnabled="{x:Bind ViewModel.SelectedProject, Converter={StaticResource NullToFalseConverter}}"
                     Padding="16,8"/>
 
+            <Button Content="Open in Terminal"
+                    Click="OpenInTerminal_Click"
+                    IsEnabled="{x:Bind ViewModel.SelectedProject, Converter={StaticResource NullToFalseConverter}}"
+                    Padding="16,8"/>
+
             <Button x:Uid="OpenFolderButton"
                     Click="OpenFolder_Click"
                     IsEnabled="{x:Bind ViewModel.SelectedProject, Converter={StaticResource NullToFalseConverter}}"

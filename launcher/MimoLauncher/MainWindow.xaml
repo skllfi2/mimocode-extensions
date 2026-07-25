@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:MimoLauncher"
+    xmlns:views="using:MimoLauncher.Views"
     Title="MiMoCode Launcher">
 
     <Window.SystemBackdrop>
@@ -17,6 +18,18 @@
 
         <TitleBar x:Name="AppTitleBar" Title="MiMoCode Launcher"/>
 
-        <Frame x:Name="ContentFrame" Grid.Row="1" Background="Transparent"/>
+        <TabView x:Name="MainTabView" Grid.Row="1" IsAddTabButtonVisible="False">
+            <TabView.TabItems>
+                <!-- Projects Tab -->
+                <TabViewItem Header="Projects" Icon="Folder">
+                    <views:MainPage x:Name="ProjectsPage"/>
+                </TabViewItem>
+                
+                <!-- Terminal Tab -->
+                <TabViewItem Header="Terminal" Icon="Terminal">
+                    <views:TerminalPage x:Name="TerminalPage"/>
+                </TabViewItem>
+            </TabView.TabItems>
+        </TabView>
     </Grid>
 </Window>
