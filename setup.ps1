@@ -263,3 +263,10 @@ switch ($Command) {
         }
     }
 }
+
+# Keep window open if running via iex
+if ($MyInvocation.InvocationName -eq '.') {
+    Write-Host ""
+    Write-Host "Press any key to exit..." -ForegroundColor Yellow
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+}
