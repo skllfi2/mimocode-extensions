@@ -7,6 +7,12 @@ import { join } from "path"
  * 
  * Merges config-validator.ts and runtime-state-validator.ts
  * Optimized for token efficiency.
+ * 
+ * Based on ZuiV2 runtime issues:
+ * - Version shows "—" because settings are null
+ * - Lua files empty (mod_lua/ empty, lua/ has files)
+ * - Lists empty (only comments in files)
+ * - Toggle mode UX not documented
  */
 
 interface ConfigIssue {
@@ -28,7 +34,22 @@ const PATTERNS = {
   settings: [
     { p: /"?\w+"?\s*:\s*null/, m: 'Setting is null', s: 'warning' },
     { p: /"?\w+"?\s*:\s*"—"/, m: 'Setting is placeholder', s: 'info' },
+    { p: /"?\w+"?\s*:\s*""/, m: 'Setting is empty string', s: 'warning' },
   ],
+}
+
+// Empty file patterns
+const EMPTY_FILE_PATTERNS = [
+  /^\s*$/,
+  /^#/,
+  /^\/\/.*$/,
+  /^\/\*.*\*\//,
+]
+
+function isEmptyOrCommentOnly(content: string): boolean {
+  const trimmed = content.trim()
+  if (trimmed.length === 0) return true
+  return EMPTY_FILE_PATTERNS.some(p => p.test(trimmed))
 }
 
 export const configValidator: Hook = {
@@ -52,6 +73,28 @@ export const configValidator: Hook = {
       for (const { p, m, s } of PATTERNS.settings) {
         if (p.test(content)) issues.push({ type: s as any, message: m, file: file_path })
       }
+      
+      // Check for null/empty values in JSON
+      try {
+        const json = JSON.parse(content)
+        for (const [key, value] of Object.entries(json)) {
+          if (value === null || value === undefined) {
+            issues.push({ type: 'warning', message: `Setting "${key}" is null/undefined`, file: file_path })
+          }
+          if (value === "" || value === "—") {
+            issues.push({ type: 'info', message: `Setting "${key}" is placeholder`, file: file_path })
+          }
+        }
+      } catch (e) {
+        // JSON parse error - already handled
+      }
+    }
+    
+    // Check file contents
+    if (content && file_path) {
+      if (isEmptyOrCommentOnly(content)) {
+        issues.push({ type: 'warning', message: `File is empty or only comments: ${file_path}` })
+      }
     }
     
     // Check runtime state
@@ -59,6 +102,21 @@ export const configValidator: Hook = {
       const files = readdirSync(file_path)
       if (files.length === 0) {
         issues.push({ type: 'warning', message: `Empty directory: ${file_path}` })
+      } else {
+        // Check for empty files in directory
+        for (const file of files) {
+          const filePath = join(file_path, file)
+          if (existsSync(filePath) && statSync(filePath).isFile()) {
+            try {
+              const fileContent = readFileSync(filePath, 'utf-8')
+              if (isEmptyOrCommentOnly(fileContent)) {
+                issues.push({ type: 'warning', message: `Empty file: ${filePath}` })
+              }
+            } catch (e) {
+              // Skip files that can't be read
+            }
+          }
+        }
       }
     }
     

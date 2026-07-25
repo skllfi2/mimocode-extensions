@@ -1,9 +1,8 @@
 # MiMoCode Project Launcher
 # PowerShell GUI for managing and launching MiCode projects
 
-Add-Type -AssemblyName PresentationFramework
-Add-Type -AssemblyName PresentationCore
-Add-Type -AssemblyName WindowsBase
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
 
 # ============================================
 # CONFIGURATION
@@ -18,7 +17,7 @@ $MimoCommand = "mimo"
 
 function Load-Projects {
     if (Test-Path $ConfigPath) {
-        return Get-Content $ConfigPath | ConvertFrom-Json
+        return Get-Content $ConfigPath -Raw | ConvertFrom-Json
     } else {
         return @{ projects = @(); settings = @{ theme = "dark"; showRecent = $true; recentCount = 5 } }
     }
@@ -39,262 +38,236 @@ function Update-LastUsed {
 }
 
 # ============================================
-# XAML GUI
+# CREATE FORM
 # ============================================
 
-[xml]$xaml = @"
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MiMoCode Project Launcher"
-        Height="600" Width="800"
-        WindowStartupLocation="CenterScreen"
-        Background="#1e1e1e">
-    
-    <Window.Resources>
-        <Style x:Key="DarkButton" TargetType="Button">
-            <Setter Property="Background" Value="#3c3c3c"/>
-            <Setter Property="Foreground" Value="#ffffff"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="15,8"/>
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="Cursor" Value="Hand"/>
-        </Style>
-        <Style x:Key="AccentButton" TargetType="Button">
-            <Setter Property="Background" Value="#0078d4"/>
-            <Setter Property="Foreground" Value="#ffffff"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="15,8"/>
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="Cursor" Value="Hand"/>
-        </Style>
-    </Window.Resources>
-    
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        
-        <!-- Header -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,10">
-            <TextBlock Text="MiMoCode Project Launcher" 
-                       FontSize="24" FontWeight="Bold" 
-                       Foreground="#ffffff" Margin="0,0,0,10"/>
-            
-            <!-- Search and Actions -->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                
-                <TextBox x:Name="SearchBox" 
-                         Grid.Column="0"
-                         PlaceholderText="Search projects..."
-                         Background="#2d2d2d" Foreground="#ffffff"
-                         BorderThickness="0" Padding="10,8"
-                         Margin="0,0,5,0"/>
-                
-                <Button x:Name="AddButton" 
-                        Grid.Column="1"
-                        Content="+ Add Project"
-                        Style="{StaticResource AccentButton}"
-                        Click="AddProject_Click"/>
-                
-                <Button x:Name="RefreshButton" 
-                        Grid.Column="2"
-                        Content="Refresh"
-                        Style="{StaticResource DarkButton}"
-                        Click="Refresh_Click"/>
-                
-                <Button x:Name="SettingsButton" 
-                        Grid.Column="3"
-                        Content="Settings"
-                        Style="{StaticResource DarkButton}"
-                        Click="Settings_Click"/>
-            </Grid>
-        </StackPanel>
-        
-        <!-- Project List -->
-        <ListView x:Name="ProjectList" 
-                  Grid.Row="1"
-                  Background="#252526"
-                  Foreground="#ffffff"
-                  BorderThickness="0"
-                  SelectionChanged="ProjectList_SelectionChanged">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Name" Width="150" DisplayMemberBinding="{Binding Name}"/>
-                    <GridViewColumn Header="Description" Width="250" DisplayMemberBinding="{Binding Description}"/>
-                    <GridViewColumn Header="Category" Width="100" DisplayMemberBinding="{Binding Category}"/>
-                    <GridViewColumn Header="Last Used" Width="100" DisplayMemberBinding="{Binding LastUsed}"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
-        
-        <!-- Footer -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,10,0,0">
-            <Button x:Name="OpenFolderButton" 
-                    Content="Open Folder"
-                    Style="{StaticResource DarkButton}"
-                    Click="OpenFolder_Click"
-                    IsEnabled="False"/>
-            
-            <Button x:Name="EditButton" 
-                    Content="Edit"
-                    Style="{StaticResource DarkButton}"
-                    Click="Edit_Click"
-                    IsEnabled="False"/>
-            
-            <Button x:Name="DeleteButton" 
-                    Content="Delete"
-                    Style="{StaticResource DarkButton}"
-                    Click="Delete_Click"
-                    IsEnabled="False"
-                    Foreground="#ff4444"/>
-            
-            <Button x:Name="LaunchButton" 
-                    Content="Launch MiMoCode"
-                    Style="{StaticResource AccentButton}"
-                    Click="Launch_Click"
-                    IsEnabled="False"/>
-            
-            <TextBlock x:Name="StatusText" 
-                       Text="Ready"
-                       Foreground="#888888"
-                       VerticalAlignment="Center"
-                       Margin="20,0,0,0"/>
-        </StackPanel>
-    </Grid>
-</Window>
-"@
+$form = New-Object System.Windows.Forms.Form
+$form.Text = "MiMoCode Project Launcher"
+$form.Size = New-Object System.Drawing.Size(800, 600)
+$form.StartPosition = "CenterScreen"
+$form.BackColor = [System.Drawing.Color]::FromArgb(30, 30, 30)
+$form.ForeColor = [System.Drawing.Color]::White
 
 # ============================================
-# CREATE WINDOW
+# HEADER
 # ============================================
 
-$reader = New-Object System.Xml.XmlNodeReader $xaml
-$window = [Windows.Markup.XamlReader]::Load($reader)
+$titleLabel = New-Object System.Windows.Forms.Label
+$titleLabel.Text = "MiMoCode Project Launcher"
+$titleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 20, [System.Drawing.FontStyle]::Bold)
+$titleLabel.ForeColor = [System.Drawing.Color]::White
+$titleLabel.AutoSize = $true
+$titleLabel.Location = New-Object System.Drawing.Point(20, 20)
+$form.Controls.Add($titleLabel)
 
-# Get controls
-$SearchBox = $window.FindName("SearchBox")
-$ProjectList = $window.FindName("ProjectList")
-$AddButton = $window.FindName("AddButton")
-$RefreshButton = $window.FindName("RefreshButton")
-$SettingsButton = $window.FindName("SettingsButton")
-$OpenFolderButton = $window.FindName("OpenFolderButton")
-$EditButton = $window.FindName("EditButton")
-$DeleteButton = $window.FindName("DeleteButton")
-$LaunchButton = $window.FindName("LaunchButton")
-$StatusText = $window.FindName("StatusText")
+# ============================================
+# SEARCH BOX
+# ============================================
+
+$searchLabel = New-Object System.Windows.Forms.Label
+$searchLabel.Text = "Search:"
+$searchLabel.ForeColor = [System.Drawing.Color]::White
+$searchLabel.AutoSize = $true
+$searchLabel.Location = New-Object System.Drawing.Point(20, 70)
+$form.Controls.Add($searchLabel)
+
+$searchBox = New-Object System.Windows.Forms.TextBox
+$searchBox.Size = New-Object System.Drawing.Size(300, 25)
+$searchBox.Location = New-Object System.Drawing.Point(80, 67)
+$searchBox.BackColor = [System.Drawing.Color]::FromArgb(45, 45, 45)
+$searchBox.ForeColor = [System.Drawing.Color]::White
+$form.Controls.Add($searchBox)
+
+# ============================================
+# LIST VIEW
+# ============================================
+
+$listView = New-Object System.Windows.Forms.ListView
+$listView.Size = New-Object System.Drawing.Size(740, 350)
+$listView.Location = New-Object System.Drawing.Size(20, 110)
+$listView.View = "Details"
+$listView.FullRowSelect = $true
+$listView.GridLines = $true
+$listView.BackColor = [System.Drawing.Color]::FromArgb(37, 37, 37)
+$listView.ForeColor = [System.Drawing.Color]::White
+
+# Add columns
+$listView.Columns.Add("Name", 150)
+$listView.Columns.Add("Description", 250)
+$listView.Columns.Add("Category", 100)
+$listView.Columns.Add("Last Used", 100)
+$listView.Columns.Add("Path", 200)
+
+$form.Controls.Add($listView)
+
+# ============================================
+# BUTTONS
+# ============================================
+
+$buttonY = 480
+
+$addButton = New-Object System.Windows.Forms.Button
+$addButton.Text = "+ Add Project"
+$addButton.Size = New-Object System.Drawing.Size(120, 35)
+$addButton.Location = New-Object System.Drawing.Point(20, $buttonY)
+$addButton.BackColor = [System.Drawing.Color]::FromArgb(0, 120, 212)
+$addButton.ForeColor = [System.Drawing.Color]::White
+$addButton.FlatStyle = "Flat"
+$form.Controls.Add($addButton)
+
+$launchButton = New-Object System.Windows.Forms.Button
+$launchButton.Text = "Launch MiMoCode"
+$launchButton.Size = New-Object System.Drawing.Size(150, 35)
+$launchButton.Location = New-Object System.Drawing.Point(150, $buttonY)
+$launchButton.BackColor = [System.Drawing.Color]::FromArgb(0, 120, 212)
+$launchButton.ForeColor = [System.Drawing.Color]::White
+$launchButton.FlatStyle = "Flat"
+$launchButton.Enabled = $false
+$form.Controls.Add($launchButton)
+
+$openFolderButton = New-Object System.Windows.Forms.Button
+$openFolderButton.Text = "Open Folder"
+$openFolderButton.Size = New-Object System.Drawing.Size(120, 35)
+$openFolderButton.Location = New-Object System.Drawing.Point(310, $buttonY)
+$openFolderButton.BackColor = [System.Drawing.Color]::FromArgb(60, 60, 60)
+$openFolderButton.ForeColor = [System.Drawing.Color]::White
+$openFolderButton.FlatStyle = "Flat"
+$openFolderButton.Enabled = $false
+$form.Controls.Add($openFolderButton)
+
+$deleteButton = New-Object System.Windows.Forms.Button
+$deleteButton.Text = "Delete"
+$deleteButton.Size = New-Object System.Drawing.Size(80, 35)
+$deleteButton.Location = New-Object System.Drawing.Point(440, $buttonY)
+$deleteButton.BackColor = [System.Drawing.Color]::FromArgb(60, 60, 60)
+$deleteButton.ForeColor = [System.Drawing.Color]::Red
+$deleteButton.FlatStyle = "Flat"
+$deleteButton.Enabled = $false
+$form.Controls.Add($deleteButton)
+
+$statusLabel = New-Object System.Windows.Forms.Label
+$statusLabel.Text = "Ready"
+$statusLabel.ForeColor = [System.Drawing.Color]::Gray
+$statusLabel.AutoSize = $true
+$statusLabel.Location = New-Object System.Drawing.Point(540, ($buttonY + 10))
+$form.Controls.Add($statusLabel)
 
 # ============================================
 # LOAD PROJECTS
 # ============================================
 
 $config = Load-Projects
-$ProjectList.ItemsSource = $config.projects
+
+function Refresh-List {
+    param($Filter = "")
+    $listView.Items.Clear()
+    foreach ($project in $config.projects) {
+        if ($Filter -eq "" -or $project.name -like "*$Filter*" -or $project.description -like "*$Filter*") {
+            $item = New-Object System.Windows.Forms.ListViewItem($project.name)
+            $item.SubItems.Add($project.description)
+            $item.SubItems.Add($project.category)
+            $item.SubItems.Add($project.lastUsed)
+            $item.SubItems.Add($project.path)
+            $item.Tag = $project
+            $listView.Items.Add($item)
+        }
+    }
+}
+
+Refresh-List
 
 # ============================================
 # EVENT HANDLERS
 # ============================================
 
-$SearchBox.Add_TextChanged({
-    $query = $SearchBox.Text.ToLower()
-    if ([string]::IsNullOrEmpty($query)) {
-        $ProjectList.ItemsSource = $config.projects
+$searchBox.Add_TextChanged({
+    Refresh-List $searchBox.Text
+})
+
+$listView.Add_SelectedIndexChanged({
+    if ($listView.SelectedItems.Count -gt 0) {
+        $launchButton.Enabled = $true
+        $openFolderButton.Enabled = $true
+        $deleteButton.Enabled = $true
+        $statusLabel.Text = "Selected: $($listView.SelectedItems[0].Text)"
     } else {
-        $filtered = $config.projects | Where-Object { 
-            $_.name.ToLower().Contains($query) -or 
-            $_.description.ToLower().Contains($query) -or
-            $_.category.ToLower().Contains($query)
-        }
-        $ProjectList.ItemsSource = $filtered
+        $launchButton.Enabled = $false
+        $openFolderButton.Enabled = $false
+        $deleteButton.Enabled = $false
+        $statusLabel.Text = "Ready"
     }
 })
 
-$ProjectList_SelectionChanged = {
-    $selected = $ProjectList.SelectedItem
-    if ($selected) {
-        $OpenFolderButton.IsEnabled = $true
-        $EditButton.IsEnabled = $true
-        $DeleteButton.IsEnabled = $true
-        $LaunchButton.IsEnabled = $true
-        $StatusText.Text = "Selected: $($selected.name)"
-    } else {
-        $OpenFolderButton.IsEnabled = $false
-        $EditButton.IsEnabled = $false
-        $DeleteButton.IsEnabled = $false
-        $LaunchButton.IsEnabled = $false
-        $StatusText.Text = "Ready"
+$launchButton.Add_Click({
+    if ($listView.SelectedItems.Count -gt 0) {
+        $project = $listView.SelectedItems[0].Tag
+        $statusLabel.Text = "Launching MiMoCode in $($project.name)..."
+        
+        Update-LastUsed $config $project.name
+        
+        Start-Process -FilePath "powershell" -ArgumentList "-NoExit -Command `"cd '$($project.path)'; $MimoCommand`""
+        
+        $statusLabel.Text = "Launched MiMoCode in $($project.name)"
     }
-}
+})
 
-$Refresh_Click = {
-    $config = Load-Projects
-    $ProjectList.ItemsSource = $config.projects
-    $StatusText.Text = "Refreshed"
-}
+$openFolderButton.Add_Click({
+    if ($listView.SelectedItems.Count -gt 0) {
+        $project = $listView.SelectedItems[0].Tag
+        if (Test-Path $project.path) {
+            Start-Process explorer.exe $project.path
+        }
+    }
+})
 
-$AddProject_Click = {
-    # Create add project dialog
-    $addWindow = New-Object System.Windows.Window
-    $addWindow.Title = "Add Project"
-    $addWindow.Height = 300
-    $addWindow.Width = 400
-    $addWindow.WindowStartupLocation = "CenterOwner"
-    $addWindow.Background = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.ColorConverter]::ConvertFromString("#1e1e1e"))
+$addButton.Add_Click({
+    $addForm = New-Object System.Windows.Forms.Form
+    $addForm.Text = "Add Project"
+    $addForm.Size = New-Object System.Drawing.Size(400, 250)
+    $addForm.StartPosition = "CenterParent"
+    $addForm.BackColor = [System.Drawing.Color]::FromArgb(30, 30, 30)
+    $addForm.ForeColor = [System.Drawing.Color]::White
     
-    $addGrid = New-Object System.Windows.Controls.Grid
-    $addGrid.Margin = New-Object System.Windows.Thickness(10)
-    
-    # Add rows
-    $addGrid.RowDefinitions.Add((New-Object System.Windows.Controls.RowDefinition))
-    $addGrid.RowDefinitions.Add((New-Object System.Windows.Controls.RowDefinition))
-    $addGrid.RowDefinitions.Add((New-Object System.Windows.Controls.RowDefinition))
-    $addGrid.RowDefinitions.Add((New-Object System.Windows.Controls.RowDefinition))
-    $addGrid.RowDefinitions.Add((New-Object System.Windows.Controls.RowDefinition))
-    
-    # Name
-    $nameLabel = New-Object System.Windows.Controls.TextBlock
+    $nameLabel = New-Object System.Windows.Forms.Label
     $nameLabel.Text = "Name:"
-    $nameLabel.Foreground = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.ColorConverter]::ConvertFromString("#ffffff"))
-    [System.Windows.Controls.Grid]::SetRow($nameLabel, 0)
-    $addGrid.Children.Add($nameLabel)
+    $nameLabel.Location = New-Object System.Drawing.Point(20, 20)
+    $nameLabel.AutoSize = $true
+    $addForm.Controls.Add($nameLabel)
     
-    $nameBox = New-Object System.Windows.Controls.TextBox
-    $nameBox.Background = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.ColorConverter]::ConvertFromString("#2d2d2d"))
-    $nameBox.Foreground = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.ColorConverter]::ConvertFromString("#ffffff"))
-    $nameBox.Margin = New-Object System.Windows.Thickness(0,5,0,10)
-    [System.Windows.Controls.Grid]::SetRow($nameBox, 1)
-    $addGrid.Children.Add($nameBox)
+    $nameBox = New-Object System.Windows.Forms.TextBox
+    $nameBox.Size = New-Object System.Drawing.Size(340, 25)
+    $nameBox.Location = New-Object System.Drawing.Point(20, 45)
+    $addForm.Controls.Add($nameBox)
     
-    # Path
-    $pathLabel = New-Object System.Windows.Controls.TextBlock
+    $pathLabel = New-Object System.Windows.Forms.Label
     $pathLabel.Text = "Path:"
-    $pathLabel.Foreground = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.ColorConverter]::ConvertFromString("#ffffff"))
-    [System.Windows.Controls.Grid]::SetRow($pathLabel, 2)
-    $addGrid.Children.Add($pathLabel)
+    $pathLabel.Location = New-Object System.Drawing.Point(20, 80)
+    $pathLabel.AutoSize = $true
+    $addForm.Controls.Add($pathLabel)
     
-    $pathBox = New-Object System.Windows.Controls.TextBox
-    $pathBox.Background = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.ColorConverter]::ConvertFromString("#2d2d2d"))
-    $pathBox.Foreground = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.ColorConverter]::ConvertFromString("#ffffff"))
-    $pathBox.Margin = New-Object System.Windows.Thickness(0,5,0,10)
-    [System.Windows.Controls.Grid]::SetRow($pathBox, 3)
-    $addGrid.Children.Add($pathBox)
+    $pathBox = New-Object System.Windows.Forms.TextBox
+    $pathBox.Size = New-Object System.Drawing.Size(340, 25)
+    $pathBox.Location = New-Object System.Drawing.Point(20, 105)
+    $addForm.Controls.Add($pathBox)
     
-    # Buttons
-    $buttonPanel = New-Object System.Windows.Controls.StackPanel
-    $buttonPanel.Orientation = "Horizontal"
-    $buttonPanel.HorizontalAlignment = "Right"
-    [System.Windows.Controls.Grid]::SetRow($buttonPanel, 4)
+    $browseButton = New-Object System.Windows.Forms.Button
+    $browseButton.Text = "Browse"
+    $browseButton.Size = New-Object System.Drawing.Size(80, 25)
+    $browseButton.Location = New-Object System.Drawing.Point(280, 105)
+    $browseButton.Add_Click({
+        $folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog
+        if ($folderBrowser.ShowDialog() -eq "OK") {
+            $pathBox.Text = $folderBrowser.SelectedPath
+        }
+    })
+    $addForm.Controls.Add($browseButton)
     
-    $okButton = New-Object System.Windows.Controls.Button
-    $okButton.Content = "Add"
-    $okButton.Style = $window.FindResource("AccentButton")
+    $okButton = New-Object System.Windows.Forms.Button
+    $okButton.Text = "Add"
+    $okButton.Size = New-Object System.Drawing.Size(80, 30)
+    $okButton.Location = New-Object System.Drawing.Point(200, 160)
+    $okButton.BackColor = [System.Drawing.Color]::FromArgb(0, 120, 212)
+    $okButton.ForeColor = [System.Drawing.Color]::White
     $okButton.Add_Click({
         if ($nameBox.Text -and $pathBox.Text) {
             $newProject = @{
@@ -307,80 +280,46 @@ $AddProject_Click = {
             }
             $config.projects += $newProject
             Save-Projects $config
-            $ProjectList.ItemsSource = $config.projects
-            $StatusText.Text = "Added: $($nameBox.Text)"
-            $addWindow.Close()
+            Refresh-List
+            $statusLabel.Text = "Added: $($nameBox.Text)"
+            $addForm.Close()
         }
     })
-    $buttonPanel.Children.Add($okButton)
+    $addForm.Controls.Add($okButton)
     
-    $cancelButton = New-Object System.Windows.Controls.Button
-    $cancelButton.Content = "Cancel"
-    $cancelButton.Style = $window.FindResource("DarkButton")
-    $cancelButton.Add_Click({ $addWindow.Close() })
-    $buttonPanel.Children.Add($cancelButton)
+    $cancelButton = New-Object System.Windows.Forms.Button
+    $cancelButton.Text = "Cancel"
+    $cancelButton.Size = New-Object System.Drawing.Size(80, 30)
+    $cancelButton.Location = New-Object System.Drawing.Point(290, 160)
+    $cancelButton.BackColor = [System.Drawing.Color]::FromArgb(60, 60, 60)
+    $cancelButton.ForeColor = [System.Drawing.Color]::White
+    $cancelButton.Add_Click({ $addForm.Close() })
+    $addForm.Controls.Add($cancelButton)
     
-    $addGrid.Children.Add($buttonPanel)
-    
-    $addWindow.Content = $addGrid
-    $addWindow.ShowDialog() | Out-Null
-}
+    $addForm.ShowDialog() | Out-Null
+})
 
-$Launch_Click = {
-    $selected = $ProjectList.SelectedItem
-    if ($selected) {
-        $StatusText.Text = "Launching MiMoCode in $($selected.path)..."
-        
-        # Update last used
-        Update-LastUsed $config $selected.name
-        
-        # Launch MiMoCode in new window
-        Start-Process -FilePath "powershell" -ArgumentList "-NoExit -Command `"cd '$($selected.path)'; $MimoCommand`""
-        
-        $StatusText.Text = "Launched MiMoCode in $($selected.name)"
-    }
-}
-
-$OpenFolder_Click = {
-    $selected = $ProjectList.SelectedItem
-    if ($selected -and (Test-Path $selected.path)) {
-        Start-Process explorer.exe $selected.path
-    }
-}
-
-$Edit_Click = {
-    $selected = $ProjectList.SelectedItem
-    if ($selected) {
-        # Create edit dialog (similar to add)
-        $StatusText.Text = "Edit: $($selected.name)"
-    }
-}
-
-$Delete_Click = {
-    $selected = $ProjectList.SelectedItem
-    if ($selected) {
-        $result = [System.Windows.MessageBox]::Show(
-            "Delete project '$($selected.name)' from list?",
+$deleteButton.Add_Click({
+    if ($listView.SelectedItems.Count -gt 0) {
+        $project = $listView.SelectedItems[0].Tag
+        $result = [System.Windows.Forms.MessageBox]::Show(
+            "Delete project '$($project.name)' from list?",
             "Confirm Delete",
             "YesNo",
             "Question"
         )
         
         if ($result -eq "Yes") {
-            $config.projects = $config.projects | Where-Object { $_.name -ne $selected.name }
+            $config.projects = $config.projects | Where-Object { $_.name -ne $project.name }
             Save-Projects $config
-            $ProjectList.ItemsSource = $config.projects
-            $StatusText.Text = "Deleted: $($selected.name)"
+            Refresh-List
+            $statusLabel.Text = "Deleted: $($project.name)"
         }
     }
-}
-
-$Settings_Click = {
-    $StatusText.Text = "Settings coming soon..."
-}
+})
 
 # ============================================
-# SHOW WINDOW
+# SHOW FORM
 # ============================================
 
-$window.ShowDialog() | Out-Null
+$form.ShowDialog() | Out-Null
