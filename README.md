@@ -49,7 +49,7 @@ bash setup.sh status
 
 ## What's Inside
 
-### Hooks (21)
+### Hooks (27)
 | Hook | Description |
 |------|-------------|
 | `comment-checker` | Blocks AI slop words (clearly, simply, robust, leverage) |
@@ -73,6 +73,13 @@ bash setup.sh status
 | `empty-response-detector` | Detects empty responses |
 | `session-notification` | Session status notifications |
 | `non-interactive-env` | Non-interactive environment support |
+| `error-pattern-validator` | Validates code patterns and prevents common errors |
+| `resource-tracker` | Tracks resource lifecycle and alerts on leaks |
+| `winui-validator` | Validates WinUI 3 specific patterns |
+| `config-validator` | Validates configuration files and paths |
+| `test-validator` | Validates testing patterns |
+| `memory-tracker` | Tracks project state and documentation |
+| `git-validator` | Validates git operations and prevents mistakes |
 
 ### Tools (13)
 | Tool | Description |
@@ -91,7 +98,7 @@ bash setup.sh status
 | `look-at` | Analyze media files (PDFs, images) |
 | `session-manager` | Session management utilities |
 
-### Skills (17)
+### Skills (18)
 | Skill | Trigger |
 |-------|---------|
 | `project-context` | Auto-loaded project context |
@@ -111,8 +118,9 @@ bash setup.sh status
 | `playwright` | Browser automation |
 | `smart-rebase` | Git rebase operations |
 | `work-with-pr` | Pull request workflow |
+| `error-audit` | Audit code for common error patterns |
 
-### Rules (5)
+### Rules (6)
 | Rule | Content |
 |------|---------|
 | `code-style` | const/let, early returns, naming |
@@ -120,6 +128,7 @@ bash setup.sh status
 | `security` | OWASP, secrets, input sanitization |
 | `performance` | Streaming, Map/Set, lazy loading |
 | `anti-patterns` | Common mistakes |
+| `error-prevention` | Error patterns and prevention rules |
 
 ### Workflows (4)
 | Workflow | Description |
