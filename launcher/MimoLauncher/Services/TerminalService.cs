@@ -35,12 +35,12 @@ public class TerminalService : IDisposable
         var startInfo = new ProcessStartInfo
         {
             FileName = "powershell.exe",
-            Arguments = "-NoLogo -NoProfile",
+            Arguments = "-NoLogo -NoProfile -NoExit",
             UseShellExecute = false,
             RedirectStandardInput = true,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            CreateNoWindow = true,
+            CreateNoWindow = false,
             StandardOutputEncoding = Encoding.UTF8,
             StandardErrorEncoding = Encoding.UTF8
         };
@@ -64,9 +64,6 @@ public class TerminalService : IDisposable
         // Start reading output
         _ = ReadOutputAsync(_cts.Token);
         _ = ReadErrorAsync(_cts.Token);
-        
-        // Send initial command to set location
-        await SendCommandAsync($"cd '{CurrentDirectory}'");
         
         OutputReceived?.Invoke(this, $"PowerShell started in {CurrentDirectory}\n");
     }

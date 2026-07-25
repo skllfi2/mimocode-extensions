@@ -58,6 +58,7 @@ public sealed partial class TerminalPage : Page
         DispatcherQueue.TryEnqueue(() =>
         {
             OutputText.Text += output;
+            // Auto-scroll to bottom
             OutputScrollViewer.ChangeView(0, OutputScrollViewer.ExtentHeight, 0);
         });
     }
