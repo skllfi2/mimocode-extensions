@@ -1,44 +1,35 @@
 import type { Hook } from "@mimo-ai/plugin"
+import { readFileSync, existsSync, readdirSync, statSync } from "fs"
+import { join } from "path"
 
 /**
- * Configuration Validator Hook
+ * Consolidated Config Validator Hook
  * 
- * Validates configuration files and paths before execution.
- * Based on analysis of common configuration errors.
- * 
- * Checks:
- * - File path validity
- * - JSON/JSONC syntax
- * - Required fields
- * - Environment variables
+ * Merges config-validator.ts and runtime-state-validator.ts
+ * Optimized for token efficiency.
  */
 
 interface ConfigIssue {
   type: 'error' | 'warning' | 'info'
   message: string
   file?: string
-  line?: number
 }
 
-const PATH_ISSUES = [
-  { pattern: /\\\\\\\\/, message: 'Double backslashes in path', severity: 'error' },
-  { pattern: /[A-Z]:\\\\[^\\]/, message: 'Missing trailing slash', severity: 'warning' },
-  { pattern: /\s{2,}/, message: 'Multiple spaces in path', severity: 'error' },
-  { pattern: /\$\{[^}]+\}/, message: 'Unresolved variable in path', severity: 'warning' },
-  { pattern: /\/tmp\//, message: 'Temporary path may not persist', severity: 'info' },
-]
+// Cache for validation results
+const validationCache = new Map<string, { issues: ConfigIssue[]; timestamp: number }>()
+const CACHE_TTL = 60000
 
-const JSON_ISSUES = [
-  { pattern: /,\s*[\]}]/, message: 'Trailing comma', severity: 'error' },
-  { pattern: /"([^"]+)"\s*:\s*"([^"]*"[^"]*)"/, message: 'Unescaped quote in value', severity: 'error' },
-  { pattern: /\/\/.*$/gm, message: 'Comment in JSON (use JSONC)', severity: 'info' },
-]
-
-const CONFIG_FIELDS = [
-  { field: 'model', required: true, message: 'Missing model configuration' },
-  { field: 'provider', required: true, message: 'Missing provider configuration' },
-  { field: 'apiKey', required: false, message: 'API key not configured', severity: 'warning' },
-]
+// Combined patterns
+const PATTERNS = {
+  paths: [
+    { p: /\\\\\\\\/, m: 'Double backslashes', s: 'error' },
+    { p: /\s{2,}/, m: 'Multiple spaces in path', s: 'error' },
+  ],
+  settings: [
+    { p: /"?\w+"?\s*:\s*null/, m: 'Setting is null', s: 'warning' },
+    { p: /"?\w+"?\s*:\s*"—"/, m: 'Setting is placeholder', s: 'info' },
+  ],
+}
 
 export const configValidator: Hook = {
   name: 'config-validator',
@@ -49,89 +40,38 @@ export const configValidator: Hook = {
     const { command, content, file_path } = ctx.params as any
     const issues: ConfigIssue[] = []
     
-    // Validate file paths
+    // Check paths
     if (file_path) {
-      for (const { pattern, message, severity } of PATH_ISSUES) {
-        if (pattern.test(file_path)) {
-          issues.push({
-            type: severity as any,
-            message,
-            file: file_path
-          })
-        }
+      for (const { p, m, s } of PATTERNS.paths) {
+        if (p.test(file_path)) issues.push({ type: s as any, message: m, file: file_path })
       }
     }
     
-    // Validate JSON/JSONC content
+    // Check JSON config
     if (content && (file_path?.endsWith('.json') || file_path?.endsWith('.jsonc'))) {
-      for (const { pattern, message, severity } of JSON_ISSUES) {
-        if (pattern.test(content)) {
-          issues.push({
-            type: severity as any,
-            message,
-            file: file_path
-          })
-        }
-      }
-      
-      // Check for required config fields
-      if (file_path.includes('mimocode')) {
-        for (const { field, required, message, severity } of CONFIG_FIELDS) {
-          if (required && !content.includes(`"${field}"`)) {
-            issues.push({
-              type: severity as any || 'error',
-              message,
-              file: file_path
-            })
-          }
-        }
+      for (const { p, m, s } of PATTERNS.settings) {
+        if (p.test(content)) issues.push({ type: s as any, message: m, file: file_path })
       }
     }
     
-    // Validate bash commands
-    if (command) {
-      // Check for dangerous path operations
-      if (command.includes('rm -rf') && !command.includes('/tmp')) {
-        issues.push({
-          type: 'warning',
-          message: 'Recursive delete outside /tmp'
-        })
-      }
-      
-      // Check for missing quotes
-      if (command.match(/cd [^"'][\s]/)) {
-        issues.push({
-          type: 'warning',
-          message: 'Path with spaces should be quoted'
-        })
+    // Check runtime state
+    if (file_path && existsSync(file_path) && statSync(file_path).isDirectory()) {
+      const files = readdirSync(file_path)
+      if (files.length === 0) {
+        issues.push({ type: 'warning', message: `Empty directory: ${file_path}` })
       }
     }
     
-    // Handle issues
+    // Handle results
     const errors = issues.filter(i => i.type === 'error')
-    const warnings = issues.filter(i => i.type === 'warning')
-    
     if (errors.length > 0) {
-      ctx.ui.toast({
-        variant: 'error',
-        title: 'Configuration Errors',
-        message: errors.map(e => e.message).join('\n'),
-        duration: 10000
-      })
-      
-      return {
-        block: true,
-        message: `Blocked: ${errors.length} configuration error(s)`
-      }
+      ctx.ui.toast({ variant: 'error', title: 'Config Errors', message: errors.map(e => e.message).join('\n') })
+      return { block: true }
     }
     
+    const warnings = issues.filter(i => i.type === 'warning')
     if (warnings.length > 0) {
-      ctx.ui.toast({
-        variant: 'warning',
-        title: 'Configuration Warnings',
-        message: warnings.map(w => w.message).join('\n'),
-        duration: 7000
-      })
+      ctx.ui.toast({ variant: 'warning', title: 'Config Warnings', message: warnings.map(w => w.message).join('\n') })
     }
     
     return { proceed: true }

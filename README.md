@@ -49,7 +49,7 @@ bash setup.sh status
 
 ## What's Inside
 
-### Hooks (27)
+### Hooks (33 - Optimized)
 | Hook | Description |
 |------|-------------|
 | `comment-checker` | Blocks AI slop words (clearly, simply, robust, leverage) |
@@ -73,13 +73,18 @@ bash setup.sh status
 | `empty-response-detector` | Detects empty responses |
 | `session-notification` | Session status notifications |
 | `non-interactive-env` | Non-interactive environment support |
-| `error-pattern-validator` | Validates code patterns and prevents common errors |
+| `error-validator` | Consolidated error pattern + handling validation |
+| `winui3-validator` | Consolidated WinUI3 validation with caching |
+| `config-validator` | Consolidated config + runtime state validation |
 | `resource-tracker` | Tracks resource lifecycle and alerts on leaks |
-| `winui-validator` | Validates WinUI 3 specific patterns |
-| `config-validator` | Validates configuration files and paths |
 | `test-validator` | Validates testing patterns |
 | `memory-tracker` | Tracks project state and documentation |
 | `git-validator` | Validates git operations and prevents mistakes |
+| `component-integration-validator` | Validates DI chains and event handlers |
+| `performance-validator` | Validates performance patterns |
+| `thread-safety-validator` | Validates thread safety patterns |
+| `platform-issues-validator` | Validates platform-specific issues |
+| `ux-issues-validator` | Validates UX patterns |
 
 ### Tools (13)
 | Tool | Description |
