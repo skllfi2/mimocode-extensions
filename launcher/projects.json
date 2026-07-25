@@ -1,74 +1,74 @@
 {
-  "projects": [
-    {
-      "name": "ZuiV2",
-      "path": "F:\\Development\\ZuiV2",
-      "description": "WinUI 3 Zapret Hub - DPI bypass controller",
-      "category": "Desktop",
-      "favorite": true,
-      "lastUsed": "2026-07-25"
-    },
-    {
-      "name": "GLauncher",
-      "path": "F:\\Development\\GLauncher",
-      "description": "WinUI 3 Game Launcher with Steam integration",
-      "category": "Desktop",
-      "favorite": true,
-      "lastUsed": "2026-07-24"
-    },
-    {
-      "name": "mimocode-extensions",
-      "path": "F:\\Development\\mimocode-extensions-update",
-      "description": "MiMoCode extensions and plugins",
-      "category": "Development",
-      "favorite": true,
-      "lastUsed": "2026-07-25"
-    },
-    {
-      "name": "mimo-gui",
-      "path": "F:\\Development\\mimo-gui",
-      "description": "Tauri v2 desktop wrapper for MiMoCode",
-      "category": "Desktop",
-      "favorite": false,
-      "lastUsed": "2026-07-18"
-    },
-    {
-      "name": "ZapretUI_net10",
-      "path": "F:\\Development\\ZapretUI_net10\\ZapretUI",
-      "description": "C# WinUI 3 rewrite of Zapret-Hub",
-      "category": "Desktop",
-      "favorite": false,
-      "lastUsed": "2026-07-15"
-    },
-    {
-      "name": "WInuiZapret",
-      "path": "F:\\Development\\WInuiZapret",
-      "description": "Clean WinUI 3/.NET 10 rewrite",
-      "category": "Desktop",
-      "favorite": false,
-      "lastUsed": "2026-07-07"
-    },
-    {
-      "name": "ExilesGate",
-      "path": "F:\\Development\\exilesgate",
-      "description": "Path of Exile 2 build calculator",
-      "category": "Gaming",
-      "favorite": false,
-      "lastUsed": "2026-07-06"
-    },
-    {
-      "name": "ZHUB",
-      "path": "F:\\Development\\ZHUB\\Zapret-Hub",
-      "description": "Python/PySide6 DPI bypass GUI",
-      "category": "Desktop",
-      "favorite": false,
-      "lastUsed": "2026-06-28"
-    }
-  ],
-  "settings": {
-    "theme": "dark",
-    "showRecent": true,
-    "recentCount": 5,
-    "autoRefresh": true
-  }
+    "projects":  [
+                     {
+                         "name":  "ZuiV2",
+                         "path":  "F:\\Development\\ZuiV2",
+                         "description":  "WinUI 3 Zapret Hub - DPI bypass controller",
+                         "category":  "Desktop",
+                         "favorite":  true,
+                         "lastUsed":  "2026-07-25"
+                     },
+                     {
+                         "name":  "GLauncher",
+                         "path":  "F:\\Development\\GLauncher",
+                         "description":  "WinUI 3 Game Launcher with Steam integration",
+                         "category":  "Desktop",
+                         "favorite":  true,
+                         "lastUsed":  "2026-07-24"
+                     },
+                     {
+                         "name":  "mimocode-extensions",
+                         "path":  "F:\\Development\\mimocode-extensions-update",
+                         "description":  "MiMoCode extensions and plugins",
+                         "category":  "Development",
+                         "favorite":  true,
+                         "lastUsed":  "2026-07-25"
+                     },
+                     {
+                         "name":  "mimo-gui",
+                         "path":  "F:\\Development\\mimo-gui",
+                         "description":  "Tauri v2 desktop wrapper for MiMoCode",
+                         "category":  "Desktop",
+                         "favorite":  false,
+                         "lastUsed":  "2026-07-18"
+                     },
+                     {
+                         "name":  "ZapretUI_net10",
+                         "path":  "F:\\Development\\ZapretUI_net10\\ZapretUI",
+                         "description":  "C# WinUI 3 rewrite of Zapret-Hub",
+                         "category":  "Desktop",
+                         "favorite":  false,
+                         "lastUsed":  "2026-07-15"
+                     },
+                     {
+                         "name":  "WInuiZapret",
+                         "path":  "F:\\Development\\WInuiZapret",
+                         "description":  "Clean WinUI 3/.NET 10 rewrite",
+                         "category":  "Desktop",
+                         "favorite":  false,
+                         "lastUsed":  "2026-07-07"
+                     },
+                     {
+                         "name":  "ExilesGate",
+                         "path":  "F:\\Development\\exilesgate",
+                         "description":  "Path of Exile 2 build calculator",
+                         "category":  "Gaming",
+                         "favorite":  false,
+                         "lastUsed":  "2026-07-06"
+                     },
+                     {
+                         "name":  "ZHUB",
+                         "path":  "F:\\Development\\ZHUB\\Zapret-Hub",
+                         "description":  "Python/PySide6 DPI bypass GUI",
+                         "category":  "Desktop",
+                         "favorite":  false,
+                         "lastUsed":  "2026-07-25"
+                     }
+                 ],
+    "settings":  {
+                     "theme":  "dark",
+                     "showRecent":  true,
+                     "recentCount":  5,
+                     "autoRefresh":  true
+                 }
 }
