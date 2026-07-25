@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using MimoLauncher.Services;
@@ -18,19 +19,19 @@ public partial class App : Application
     private void ConfigureServices()
     {
         var services = new ServiceCollection();
-        
+
         // Register services
         services.AddSingleton<ProjectService>();
-        
+
         // Register ViewModels
         services.AddTransient<MainViewModel>();
-        
+
         _serviceProvider = services.BuildServiceProvider();
     }
 
     public static T GetService<T>() where T : class
     {
-        return _serviceProvider?.GetService<T>() 
+        return _serviceProvider?.GetService<T>()
             ?? throw new InvalidOperationException($"Service {typeof(T)} not found");
     }
 

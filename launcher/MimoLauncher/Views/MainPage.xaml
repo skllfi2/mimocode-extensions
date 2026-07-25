@@ -7,28 +7,34 @@
     xmlns:models="using:MimoLauncher.Models"
     xmlns:converters="using:MimoLauncher.Converters"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Transparent"
+    Loaded="OnLoaded"
+    NavigationCacheMode="Enabled">
 
     <Page.Resources>
         <converters:NullToFalseConverter x:Key="NullToFalseConverter"/>
     </Page.Resources>
 
-    <Grid Padding="24">
+    <Grid Padding="32,24" RowSpacing="0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,24">
-            <TextBlock Text="MiMoCode Launcher"
-                       Style="{StaticResource TitleTextBlockStyle}"
-                       Margin="0,0,0,16"/>
+        <!-- ═══ Header ═══ -->
+        <StackPanel Grid.Row="0" Spacing="16" Margin="0,0,0,24">
+            <!-- Title -->
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <TextBlock Text="🚀 MiMoCode Launcher" 
+                           FontSize="28" FontWeight="SemiBold"
+                           Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
 
             <!-- Search Box -->
             <AutoSuggestBox x:Name="SearchBox"
-                           PlaceholderText="Search projects..."
+                           PlaceholderText="Поиск проектов..."
                            QueryIcon="Find"
                            Width="400"
                            HorizontalAlignment="Left"
@@ -36,7 +42,7 @@
                            QuerySubmitted="SearchBox_QuerySubmitted"/>
         </StackPanel>
 
-        <!-- Project List -->
+        <!-- ═══ Project List ═══ -->
         <ListView x:Name="ProjectList"
                   Grid.Row="1"
                   SelectionMode="Single"
@@ -47,65 +53,69 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:Project">
-                    <Grid Padding="16,12" CornerRadius="8"
-                          Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                    <Border Style="{StaticResource CardBorder}"
+                            Padding="20,16"
+                            Margin="0,0,0,8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <!-- Left: Project Info -->
+                            <StackPanel Grid.Column="0" Spacing="4">
+                                <TextBlock Text="{x:Bind Name}"
+                                           FontSize="16" FontWeight="SemiBold"
+                                           Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                <TextBlock Text="{x:Bind Description}"
+                                           FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           TextTrimming="CharacterEllipsis"
+                                           MaxLines="2"/>
+                            </StackPanel>
 
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="{x:Bind Name}"
-                                       Style="{StaticResource BodyStrongTextBlockStyle}"
-                                       Margin="0,0,0,4"/>
-                            <TextBlock Text="{x:Bind Description}"
-                                       Style="{StaticResource CaptionTextBlockStyle}"
-                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                       TextTrimming="CharacterEllipsis"
-                                       MaxLines="2"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="16,0,0,0">
-                            <TextBlock Text="{x:Bind Category}"
-                                       Style="{StaticResource CaptionTextBlockStyle}"
-                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                       HorizontalAlignment="Right"/>
-                            <TextBlock Text="{x:Bind LastUsed}"
-                                       Style="{StaticResource CaptionTextBlockStyle}"
-                                       Foreground="{ThemeResource TextFillColorTertiaryBrush}"
-                                       HorizontalAlignment="Right"/>
-                        </StackPanel>
-                    </Grid>
+                            <!-- Right: Category & Date -->
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="16,0,0,0" Spacing="4">
+                                <Border Background="{ThemeResource InfoBrush}" 
+                                        CornerRadius="4" Padding="8,4">
+                                    <TextBlock Text="{x:Bind Category}"
+                                               FontSize="10" FontWeight="SemiBold"
+                                               Foreground="White"/>
+                                </Border>
+                                <TextBlock Text="{x:Bind LastUsed}"
+                                           FontSize="10"
+                                           Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                           HorizontalAlignment="Right"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
-        <!-- Footer Buttons -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,24,0,0">
-            <Button Content="Add Project"
+        <!-- ═══ Footer Buttons ═══ -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" Margin="0,24,0,0">
+            <Button Content="Добавить проект"
                     Style="{StaticResource AccentButtonStyle}"
                     Click="AddProject_Click"
-                    Margin="0,0,8,0"/>
+                    Padding="16,8"/>
 
-            <Button Content="Launch MiMoCode"
+            <Button Content="Запустить MiMoCode"
                     Style="{StaticResource AccentButtonStyle}"
                     Click="LaunchMiMoCode_Click"
-                    IsEnabled="{x:Bind ViewModel.SelectedProject, Converter={StaticResource NullToFalseConverter}}"/>
+                    IsEnabled="{x:Bind ViewModel.SelectedProject, Converter={StaticResource NullToFalseConverter}}"
+                    Padding="16,8"/>
 
-            <Button Content="Open Folder"
+            <Button Content="Открыть папку"
                     Click="OpenFolder_Click"
                     IsEnabled="{x:Bind ViewModel.SelectedProject, Converter={StaticResource NullToFalseConverter}}"
-                    Margin="8,0,0,0"/>
+                    Padding="16,8"/>
 
-            <Button Content="Delete"
+            <Button Content="Удалить"
                     Click="DeleteProject_Click"
                     IsEnabled="{x:Bind ViewModel.SelectedProject, Converter={StaticResource NullToFalseConverter}}"
-                    Margin="8,0,0,0"
+                    Padding="16,8"
                     Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
 
+            <!-- Status Text -->
             <TextBlock x:Name="StatusTextBlock"
                        Text="{x:Bind ViewModel.StatusText, Mode=OneWay}"
-                       Style="{StaticResource CaptionTextBlockStyle}"
+                       FontSize="12"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                        VerticalAlignment="Center"
                        Margin="24,0,0,0"/>

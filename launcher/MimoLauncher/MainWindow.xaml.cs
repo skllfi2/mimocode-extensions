@@ -8,10 +8,10 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        
-        // Set title bar
+
+        // Set window title
         Title = "MiMoCode Launcher";
-        
+
         // Navigate to main page
         ContentFrame.Navigate(typeof(MainPage));
     }
