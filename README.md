@@ -4,11 +4,31 @@ A curated collection of hooks, tools, skills, workflows, rules, and TUI plugins 
 
 ## What's New in v2.0
 
+- ✅ **MimoLauncher** — WinUI 3 unified control center for projects and extensions
 - ✅ **OpenCode Go Support** — $10/month for all models
 - ✅ **DeepSeek V4 Flash** — cheapest model for simple tasks
 - ✅ **Token Optimization** — 40-60% savings
 - ✅ **6 MCP Servers** — filesystem, memory, github, sequential-thinking, postgres, puppeteer
 - ✅ **Fixed npm Issues** — no more "allow-scripts" warnings
+
+## MimoLauncher (WinUI 3)
+
+**Unified control center for MiMoCode projects and extensions.**
+
+### Features
+- **Projects Tab**: Manage projects, launch MiMoCode, open terminals
+- **Terminal Tab**: Integrated PowerShell terminal
+- **Extensions Tab**: Install, update, manage extensions
+
+### Quick Start
+
+```powershell
+cd launcher/MimoLauncher
+dotnet run
+```
+
+### More Info
+See [launcher/README.md](launcher/README.md) for detailed documentation.
 
 ## Quick Install (One Command)
 
