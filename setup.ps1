@@ -9,30 +9,25 @@
 #   status      - Show installed components
 #   uninstall   - Remove all extensions
 
-# ============================================
-# HANDLE IEX EXECUTION
-# ============================================
-
-if ($MyInvocation.InvocationName -eq '.' -or $MyInvocation.InvocationName -eq '&') {
-    # Script is being dot-sourced or called directly
-} else {
-    # Script is being executed via iex - save to temp and run
-    $tempScript = Join-Path $env:TEMP "mimocode-setup-temp.ps1"
-    $MyInvocation.MyCommand.Definition | Out-File -FilePath $tempScript -Encoding UTF8
-    
-    # Parse command from args or use default
-    $cmd = if ($args.Count -gt 0) { $args[0] } else { "install" }
-    
-    # Run the saved script
-    & $tempScript $cmd
-    exit
-}
-
 param(
     [Parameter(Position=0)]
     [ValidateSet("install", "update", "update:mcp", "status", "uninstall")]
     [string]$Command = "install"
 )
+
+# ============================================
+# HANDLE IEX EXECUTION
+# ============================================
+
+if ($PSCommandPath -eq $null) {
+    # Script is running via iex (no file path) - save to temp and re-run
+    $tempScript = Join-Path $env:TEMP "mimocode-setup-temp.ps1"
+    $scriptContent = $MyInvocation.MyCommand.Definition
+    [System.IO.File]::WriteAllText($tempScript, $scriptContent, [System.Text.UTF8Encoding]::new($false))
+    
+    & $tempScript @args
+    exit $LASTEXITCODE
+}
 
 # ============================================
 # CONFIGURATION
@@ -49,10 +44,10 @@ $script:BackupDir = "$script:MimoHome\.backup-$(Get-Date -Format 'yyyyMMdd-HHmms
 
 function Write-Header {
     Write-Host ""
-    Write-Host "╔══════════════════════════════════════════════════════════╗" -ForegroundColor Blue
-    Write-Host "║     MiMoCode Extensions - Universal Installer          ║" -ForegroundColor Blue
-    Write-Host "║     Version 2.0.0                                       ║" -ForegroundColor Blue
-    Write-Host "╚══════════════════════════════════════════════════════════╝" -ForegroundColor Blue
+    Write-Host "===============================================" -ForegroundColor Blue
+    Write-Host "  MiMoCode Extensions - Universal Installer  " -ForegroundColor Blue
+    Write-Host "  Version 2.0.0                               " -ForegroundColor Blue
+    Write-Host "===============================================" -ForegroundColor Blue
     Write-Host ""
 }
 
@@ -63,17 +58,17 @@ function Write-Step {
 
 function Write-Success {
     param([string]$Message)
-    Write-Host "✓ $Message" -ForegroundColor Green
+    Write-Host "[OK] $Message" -ForegroundColor Green
 }
 
 function Write-Warning {
     param([string]$Message)
-    Write-Host "⚠ $Message" -ForegroundColor Yellow
+    Write-Host "[WARN] $Message" -ForegroundColor Yellow
 }
 
 function Write-Error {
     param([string]$Message)
-    Write-Host "✗ $Message" -ForegroundColor Red
+    Write-Host "[FAIL] $Message" -ForegroundColor Red
 }
 
 function Test-Dependencies {
@@ -168,9 +163,9 @@ function Get-Status {
     $tui = (Get-ChildItem "$script:MimoTarget\tui\*.tsx" -ErrorAction SilentlyContinue).Count
     
     Write-Host ""
-    Write-Host "╔══════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "║     MiMoCode Extensions Status                         ║" -ForegroundColor Cyan
-    Write-Host "╚══════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+    Write-Host "===============================================" -ForegroundColor Cyan
+    Write-Host "  MiMoCode Extensions Status                  " -ForegroundColor Cyan
+    Write-Host "===============================================" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Installed Components:" -ForegroundColor Green
     Write-Host "  Hooks:       $hooks"
@@ -179,7 +174,7 @@ function Get-Status {
     Write-Host "  Rules:       $rules"
     Write-Host "  Workflows:   $workflows"
     Write-Host "  TUI Plugins: $tui"
-    Write-Host "  ─────────────────"
+    Write-Host "-----------------------------------"
     Write-Host "  Total:       $($hooks + $tools + $skills + $rules + $workflows + $tui)" -ForegroundColor Yellow
 }
 
@@ -208,9 +203,9 @@ switch ($Command) {
         Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
         
         Write-Host ""
-        Write-Host "╔══════════════════════════════════════════════════════════╗" -ForegroundColor Green
-        Write-Host "║     Installation Complete!                             ║" -ForegroundColor Green
-        Write-Host "╚══════════════════════════════════════════════════════════╝" -ForegroundColor Green
+        Write-Host "===============================================" -ForegroundColor Green
+        Write-Host "  Installation Complete!                      " -ForegroundColor Green
+        Write-Host "===============================================" -ForegroundColor Green
         Write-Host ""
         Get-Status
     }
@@ -233,9 +228,9 @@ switch ($Command) {
         Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
         
         Write-Host ""
-        Write-Host "╔══════════════════════════════════════════════════════════╗" -ForegroundColor Green
-        Write-Host "║     Update Complete!                                   ║" -ForegroundColor Green
-        Write-Host "╚══════════════════════════════════════════════════════════╝" -ForegroundColor Green
+        Write-Host "===============================================" -ForegroundColor Green
+        Write-Host "  Update Complete!                            " -ForegroundColor Green
+        Write-Host "===============================================" -ForegroundColor Green
         Write-Host ""
         Get-Status
     }
@@ -264,9 +259,7 @@ switch ($Command) {
     }
 }
 
-# Keep window open if running via iex
-if ($MyInvocation.InvocationName -eq '.') {
-    Write-Host ""
-    Write-Host "Press any key to exit..." -ForegroundColor Yellow
-    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-}
+# Pause so the user can see the result
+Write-Host ""
+Write-Host "Press any key to exit..." -ForegroundColor Yellow
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

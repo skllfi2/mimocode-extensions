@@ -12,11 +12,11 @@
     },
     "github": {
       "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
+      "command": ["npx", "-y", "@bitofacoder/omni-mcp-server"],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "your-token-here"
       },
-      "description": "GitHub API integration"
+      "description": "GitHub API, local Git, Slack, web fetch, memory, and filesystem (all-in-one)"
     },
     "sequential-thinking": {
       "type": "local",
@@ -25,16 +25,16 @@
     },
     "postgres": {
       "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-postgres"],
+      "command": ["npx", "-y", "@ahmetkca/mcp-server-postgres"],
       "env": {
         "DATABASE_URL": "postgresql://user:pass@localhost/db"
       },
-      "description": "PostgreSQL database access"
+      "description": "PostgreSQL database access (read-only, multi-tenant, schema introspection)"
     },
     "puppeteer": {
       "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-puppeteer"],
-      "description": "Browser automation and web scraping"
+      "command": ["npx", "-y", "@hisma/server-puppeteer"],
+      "description": "Browser automation and web scraping (Puppeteer fork)"
     }
   }
 }
