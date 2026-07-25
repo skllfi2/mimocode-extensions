@@ -36,14 +36,14 @@
 
 | Component | Count |
 |-----------|-------|
-| **Hooks** | 21 |
+| **Hooks** | 33 |
 | **Tools** | 13 |
-| **Skills** | 17 |
-| **Rules** | 5 |
+| **Skills** | 18 |
+| **Rules** | 9 |
 | **Workflows** | 4 |
-| **TUI Plugins** | 6 |
+| **TUI Plugins** | 10 |
 | **MCP Servers** | 6 |
-| **Total** | **72** |
+| **Total** | **93** |
 
 ## Files Included
 

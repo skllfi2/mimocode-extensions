@@ -125,7 +125,7 @@ bash setup.sh status
 | `work-with-pr` | Pull request workflow |
 | `error-audit` | Audit code for common error patterns |
 
-### Rules (6)
+### Rules (9)
 | Rule | Content |
 |------|---------|
 | `code-style` | const/let, early returns, naming |
@@ -134,6 +134,9 @@ bash setup.sh status
 | `performance` | Streaming, Map/Set, lazy loading |
 | `anti-patterns` | Common mistakes |
 | `error-prevention` | Error patterns and prevention rules |
+| `runtime-validation` | Runtime state validation rules |
+| `comprehensive-validation` | All validation categories |
+| `winui3-patterns` | WinUI3 specific patterns |
 
 ### Workflows (4)
 | Workflow | Description |
