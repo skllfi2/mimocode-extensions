@@ -45,6 +45,13 @@ This skill audits code for common error patterns based on analysis of 37 days of
 - Code documentation
 - Change documentation
 
+### 6. Runtime State (NEW)
+- File contents (not just existence)
+- Settings values (not just code structure)
+- Directory contents
+- Empty files and directories
+- Null/default values in settings
+
 ## How to Use
 
 ### Quick Audit
@@ -104,7 +111,26 @@ This skill works with:
 - `error-pattern-validator` hook (prevents issues)
 - `resource-tracker` hook (tracks resources)
 - `winui-validator` hook (WinUI-specific checks)
+- `runtime-state-validator` hook (checks runtime state)
 
 ## Customization
 
-Add project-specific patterns to `rules/error-prevention.md`.
+Add project-specific patterns to `rules/error-prevention.md` and `rules/runtime-validation.md`.
+
+## Common Runtime State Issues
+
+### Issue: Version Shows "—"
+**Cause**: Setting is null in settings.json
+**Fix**: Set actual value in settings
+
+### Issue: Empty Files
+**Cause**: File exists but has no content
+**Fix**: Add expected content or remove file
+
+### Issue: Empty Directories
+**Cause**: Directory exists but has no files
+**Fix**: Add expected files or remove directory
+
+### Issue: Placeholder Values
+**Cause**: Settings contain "—", "TODO", etc.
+**Fix**: Replace with actual values
