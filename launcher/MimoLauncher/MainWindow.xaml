@@ -24,10 +24,15 @@
                 <TabViewItem Header="Projects" Icon="Folder">
                     <views:MainPage x:Name="ProjectsPage"/>
                 </TabViewItem>
-                
+
                 <!-- Terminal Tab -->
                 <TabViewItem Header="Terminal" Icon="Terminal">
                     <views:TerminalPage x:Name="TerminalPage"/>
+                </TabViewItem>
+
+                <!-- Extensions Tab -->
+                <TabViewItem Header="Extensions" Icon="Package">
+                    <views:ExtensionsPage x:Name="ExtensionsPage"/>
                 </TabViewItem>
             </TabView.TabItems>
         </TabView>
