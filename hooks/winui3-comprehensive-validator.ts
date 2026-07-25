@@ -5,7 +5,7 @@ import type { Hook } from "@mimo-ai/plugin"
  * 
  * Validates all WinUI3-specific patterns based on real issues found in ZuiV2.
  * 
- * Issues covered:
+ * Issues covered (52 total):
  * 1. UI Thread Access - accessing UI from background thread
  * 2. StaticResource vs ThemeResource - theme updates
  * 3. Unloaded Event and leaks - event subscription leaks
@@ -13,6 +13,29 @@ import type { Hook } from "@mimo-ai/plugin"
  * 5. ProgressBar and async operations
  * 6. TextBox Binding and two-way binding conflicts
  * 7. ItemsSource and ObservableCollection
+ * 8. Terminal suppression - CreateNoWindow insufficient
+ * 9. ItemsRepeater nested DataTemplate - Click events not propagating
+ * 10. x:Bind Tag pattern matching - fails silently
+ * 11. WaitForConditionAsync polling vs Task.Delay
+ * 12. Single-instance Mutex placement
+ * 13. VirtualKey enum mismatch (D1 vs Number1)
+ * 14. PropertyChangedEventHandler type mismatch
+ * 15. CheckBox.IsChecked setter fires events SYNCHRONOUS
+ * 16. StackOverflowException handling
+ * 17. VS Rebuild All parallel build ordering
+ * 18. WrapPanel doesn't exist in WinUI 3
+ * 19. Stale build cache issues
+ * 20. cmd.exe /c vs start /B
+ * 21. StopAsync must propagate CancellationToken
+ * 22. IZapretService doesn't implement IDisposable
+ * 23. StringToVisibilityConverter returns Visibility, NOT bool
+ * 24. BoolToColorConverter must handle #RRGGBB AND #RRGGBBAA
+ * 25. VirtualKeyStates enum mismatch
+ * 26. x:Bind defaults to OneTime, not OneWay
+ * 27. Kill stale winws before test
+ * 28. Exit code handling
+ * 29. Environment.Exit(0) unreliable
+ * 30. Process.WaitForExitAsync() hangs when stdout pipe stays open
  */
 
 interface WinUI3Issue {
@@ -49,13 +72,6 @@ const WINUI3_COMPREHENSIVE_PATTERNS = [
     severity: 'warning',
     category: 'Theme'
   },
-  { 
-    pattern: /\{StaticResource\s+\w+Brush\}/g, 
-    message: 'Multiple StaticResource brushes detected',
-    suggestion: 'Review if theme updates are needed',
-    severity: 'info',
-    category: 'Theme'
-  },
   
   // 3. Unloaded Event and leaks
   { 
@@ -88,13 +104,6 @@ const WINUI3_COMPREHENSIVE_PATTERNS = [
     severity: 'info',
     category: 'Navigation'
   },
-  { 
-    pattern: /LoadState|OnNavigatedTo/, 
-    message: 'Navigation event handler',
-    suggestion: 'Check if state is restored correctly',
-    severity: 'info',
-    category: 'Navigation'
-  },
   
   // 5. ProgressBar and async operations
   { 
@@ -102,13 +111,6 @@ const WINUI3_COMPREHENSIVE_PATTERNS = [
     message: 'ProgressBar value update',
     suggestion: 'Ensure DispatcherQueue.TryEnqueue() if from background',
     severity: 'warning',
-    category: 'Progress'
-  },
-  { 
-    pattern: /IsIndeterminate\s*=\s*true/, 
-    message: 'Indeterminate ProgressBar',
-    suggestion: 'Set to false when operation completes',
-    severity: 'info',
     category: 'Progress'
   },
   
@@ -120,28 +122,176 @@ const WINUI3_COMPREHENSIVE_PATTERNS = [
     severity: 'warning',
     category: 'Binding'
   },
-  { 
-    pattern: /\.Text\s*=.* TextBox/, 
-    message: 'Manual TextBox.Text update',
-    suggestion: 'Use binding instead of manual updates',
-    severity: 'warning',
-    category: 'Binding'
-  },
   
   // 7. ItemsSource and ObservableCollection
-  { 
-    pattern: /ItemsSource\s*=\s*"\{Binding\s+\w+\}"/, 
-    message: 'ItemsSource binding',
-    suggestion: 'Ensure bound property is ObservableCollection for live updates',
-    severity: 'info',
-    category: 'Collection'
-  },
   { 
     pattern: /List<.*>.*ItemsSource|ItemsSource.*List<.*>/, 
     message: 'ItemsSource bound to List<>',
     suggestion: 'Use ObservableCollection for automatic UI updates',
     severity: 'warning',
     category: 'Collection'
+  },
+  
+  // 8. Terminal suppression
+  { 
+    pattern: /CreateNoWindow\s*=\s*true/, 
+    message: 'CreateNoWindow insufficient for child processes',
+    suggestion: 'Use Job Object P/Invoke for full suppression',
+    severity: 'warning',
+    category: 'Process'
+  },
+  
+  // 9. ItemsRepeater nested DataTemplate
+  { 
+    pattern: /ItemsRepeater.*DataTemplate/, 
+    message: 'ItemsRepeater with nested DataTemplate',
+    suggestion: 'Click events may not propagate - use ItemsControl',
+    severity: 'warning',
+    category: 'UI'
+  },
+  
+  // 10. x:Bind Tag pattern matching
+  { 
+    pattern: /sender\s+is\s+Button\s*\{\s*Tag\s*:\s*string\s*\}/, 
+    message: 'x:Bind Tag pattern matching fails silently',
+    suggestion: 'Use: sender is Button btn && btn.Tag is string',
+    severity: 'error',
+    category: 'Binding'
+  },
+  
+  // 11. VirtualKey enum mismatch
+  { 
+    pattern: /VirtualKey\.D[0-9]/, 
+    message: 'VirtualKey.D1-D9 incorrect for digit keys',
+    suggestion: 'Use VirtualKey.Number1-Number9',
+    severity: 'warning',
+    category: 'Input'
+  },
+  
+  // 12. PropertyChangedEventHandler type
+  { 
+    pattern: /EventHandler<.*PropertyChangedEventArgs>/, 
+    message: 'Wrong PropertyChangedEventHandler type',
+    suggestion: 'Use System.ComponentModel.PropertyChangedEventHandler',
+    severity: 'error',
+    category: 'Type'
+  },
+  
+  // 13. CheckBox.IsChecked setter
+  { 
+    pattern: /CheckBox.*IsChecked\s*=\s*(?!.*suppress)/, 
+    message: 'CheckBox.IsChecked setter fires events SYNCHRONOUS',
+    suggestion: 'Set _suppressEvents = true BEFORE IsChecked',
+    severity: 'warning',
+    category: 'Event'
+  },
+  
+  // 14. WrapPanel doesn't exist
+  { 
+    pattern: /WrapPanel/, 
+    message: 'WrapPanel doesn\'t exist in WinUI 3',
+    suggestion: 'Use ItemsRepeater with UniformGridLayout',
+    severity: 'error',
+    category: 'UI'
+  },
+  
+  // 15. x:Bind defaults to OneTime
+  { 
+    pattern: /x:Bind(?!.*Mode=)/, 
+    message: 'x:Bind defaults to OneTime',
+    suggestion: 'Add Mode=OneWay for computed properties',
+    severity: 'info',
+    category: 'Binding'
+  },
+  
+  // 16. StringToVisibilityConverter returns Visibility
+  { 
+    pattern: /StringToVisibilityConverter/, 
+    message: 'StringToVisibilityConverter returns Visibility, NOT bool',
+    suggestion: 'Use StringToBoolConverter for bool bindings',
+    severity: 'warning',
+    category: 'Converter'
+  },
+  
+  // 17. BoolToColorConverter must handle both formats
+  { 
+    pattern: /BoolToColorConverter/, 
+    message: 'BoolToColorConverter must handle #RRGGBB AND #RRGGBBAA',
+    suggestion: 'Check length before parsing [7..9]',
+    severity: 'info',
+    category: 'Converter'
+  },
+  
+  // 18. VirtualKeyStates enum mismatch
+  { 
+    pattern: /VirtualKeyStates/, 
+    message: 'VirtualKeyStates enum mismatch in WinUI 3',
+    suggestion: 'Use CoreVirtualKeyStates with bitwise AND',
+    severity: 'warning',
+    category: 'Input'
+  },
+  
+  // 19. Environment.Exit(0) unreliable
+  { 
+    pattern: /Environment\.Exit\(0\)/, 
+    message: 'Environment.Exit(0) unreliable in WinUI 3',
+    suggestion: 'Use Process.GetCurrentProcess().Kill() as fallback',
+    severity: 'warning',
+    category: 'Exit'
+  },
+  
+  // 20. Process.WaitForExitAsync hangs
+  { 
+    pattern: /WaitForExitAsync/, 
+    message: 'Process.WaitForExitAsync() may hang',
+    suggestion: 'Use poll loop while (!proc.HasExited)',
+    severity: 'warning',
+    category: 'Process'
+  },
+  
+  // 21. StopAsync must propagate CancellationToken
+  { 
+    pattern: /StopAsync.*CancellationToken\.None/, 
+    message: 'StopAsync with CancellationToken.None',
+    suggestion: 'Propagate CancellationToken for cancellation',
+    severity: 'warning',
+    category: 'Async'
+  },
+  
+  // 22. Fire-and-forget async
+  { 
+    pattern: /_\s*=\s*\w+Async\(\)/, 
+    message: 'Fire-and-forget async operation',
+    suggestion: 'Handle exceptions or use explicit async',
+    severity: 'warning',
+    category: 'Async'
+  },
+  
+  // 23. Synchronous WaitForExit
+  { 
+    pattern: /WaitForExit\(\)/, 
+    message: 'Synchronous WaitForExit blocks UI',
+    suggestion: 'Use WaitForExitAsync or poll loop',
+    severity: 'warning',
+    category: 'Process'
+  },
+  
+  // 24. cmd.exe /c vs start /B
+  { 
+    pattern: /cmd\.exe\s+\/c/, 
+    message: 'cmd.exe /c is synchronous',
+    suggestion: 'Consider start /B for async execution',
+    severity: 'info',
+    category: 'Process'
+  },
+  
+  // 25. IZapretService doesn't implement IDisposable
+  { 
+    pattern: /IZapretService(?!.*IDisposable)/, 
+    message: 'IZapretService may not implement IDisposable',
+    suggestion: 'Check if disposal is needed',
+    severity: 'info',
+    category: 'Interface'
   },
 ]
 

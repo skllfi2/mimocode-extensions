@@ -157,6 +157,138 @@ public ObservableCollection<string> Items { get; set; } = new();
 
 ---
 
+## Дополнительные WinUI3 проблемы
+
+### 8. Terminal Suppression
+```csharp
+// ❌ CreateNoWindow insufficient
+var process = new Process { StartInfo = { CreateNoWindow = true } };
+
+// ✅ Use Job Object
+var jobHandle = CreateJobObjectW(IntPtr.Zero, null);
+AssignProcessToJobObject(jobHandle, process.Handle);
+```
+
+### 9. ItemsRepeater nested DataTemplate
+```xml
+<!-- ❌ Click events may not propagate -->
+<ItemsRepeater>
+    <ItemsRepeater.ItemTemplate>
+        <DataTemplate>
+            <Button Click="OnButtonClick"/>
+        </DataTemplate>
+    </ItemsRepeater.ItemTemplate>
+</ItemsRepeater>
+
+<!-- ✅ Use ItemsControl -->
+<ItemsControl>
+    <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+            <StackPanel/>
+        </ItemsPanelTemplate>
+    </ItemsControl.ItemsPanel>
+</ItemsControl>
+```
+
+### 10. x:Bind Tag pattern matching
+```csharp
+// ❌ Fails silently
+if (sender is Button { Tag: string tag }) { }
+
+// ✅ Works correctly
+if (sender is Button btn && btn.Tag is string tag) { }
+```
+
+### 11. VirtualKey enum mismatch
+```csharp
+// ❌ Wrong for digit keys
+VirtualKey.D1, VirtualKey.D2, VirtualKey.D3
+
+// ✅ Correct for digit keys
+VirtualKey.Number1, VirtualKey.Number2, VirtualKey.Number3
+```
+
+### 12. PropertyChangedEventHandler type
+```csharp
+// ❌ Wrong type
+EventHandler<PropertyChangedEventArgs>
+
+// ✅ Correct type
+System.ComponentModel.PropertyChangedEventHandler
+```
+
+### 13. CheckBox.IsChecked setter
+```csharp
+// ❌ Fires events SYNCHRONOUS
+checkBox.IsChecked = true;
+
+// ✅ Suppress events first
+_suppressEvents = true;
+checkBox.IsChecked = true;
+_suppressEvents = false;
+```
+
+### 14. WrapPanel doesn't exist
+```xml
+<!-- ❌ WrapPanel doesn't exist in WinUI 3 -->
+<WrapPanel/>
+
+<!-- ✅ Use ItemsRepeater with UniformGridLayout -->
+<ItemsRepeater>
+    <ItemsRepeater.Layout>
+        <UniformGridLayout Orientation="Horizontal"/>
+    </ItemsRepeater.Layout>
+</ItemsRepeater>
+```
+
+### 15. Environment.Exit(0) unreliable
+```csharp
+// ❌ Unreliable in WinUI 3
+Environment.Exit(0);
+
+// ✅ Use Process.Kill()
+Process.GetCurrentProcess().Kill();
+```
+
+### 16. Process.WaitForExitAsync hangs
+```csharp
+// ❌ May hang when stdout pipe stays open
+await process.WaitForExitAsync();
+
+// ✅ Use poll loop
+while (!process.HasExited)
+{
+    await Task.Delay(100);
+}
+```
+
+### 17. StopAsync must propagate CancellationToken
+```csharp
+// ❌ Cannot be cancelled
+await StopAsync(CancellationToken.None);
+
+// ✅ Propagate token
+await StopAsync(cancellationToken);
+```
+
+### 18. Fire-and-forget async
+```csharp
+// ❌ Exceptions swallowed
+_ = LoadGroupsAsync();
+
+// ✅ Handle exceptions
+try
+{
+    await LoadGroupsAsync();
+}
+catch (Exception ex)
+{
+    _log.LogError(ex, "Failed to load groups");
+}
+```
+
+---
+
 ## Быстрая проверка
 
 ```bash
@@ -169,4 +301,13 @@ grep -r "PropertyChanged.*-=" --include="*.cs" .
 
 # Найти ручные обновления TextBox
 grep -r "\.Text\s*=" --include="*.cs" .
+
+# Найти VirtualKey.D
+grep -r "VirtualKey\.D[0-9]" --include="*.cs" .
+
+# Найти Environment.Exit
+grep -r "Environment\.Exit" --include="*.cs" .
+
+# Найти WaitForExitAsync
+grep -r "WaitForExitAsync" --include="*.cs" .
 ```
